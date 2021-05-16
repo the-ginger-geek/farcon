@@ -11,69 +11,43 @@ import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
 import 'package:flame/image_composition.dart';
 
-class Farcon extends BaseGame with HorizontalDragDetector, VerticalDragDetector, MapBuilder {
-
+class Farcon extends BaseGame with MultiTouchDragDetector, MapBuilder {
   late DefaultMap defaultMap;
   late Positioner positioner;
 
-  Offset dragDown = Offset(0, 0);
+  Vector2 dragDown = Vector2(0, 0);
 
   @override
   Future<void> onLoad() async {
     super.onLoad();
     await _loadMap();
-    camera.worldToScreen(viewport.effectiveSize);
+    camera.screenToWorld(defaultMap.size);
   }
 
   @override
-  void onHorizontalDragStart(DragStartDetails details) => dragDown = details.globalPosition;
-
-  @override
-  void onHorizontalDragCancel() => defaultMap.stopMoving();
-
-  @override
-  void onVerticalDragStart(DragStartDetails details) => dragDown = details.globalPosition;
-
-  @override
-  void onVerticalDragCancel() => defaultMap.stopMoving();
-
-  @override
-  void onHorizontalDragUpdate(DragUpdateDetails details) {
-    if (details.globalPosition.dx < dragDown.dx) {
-      defaultMap.moveRight();
-    } else if (details.globalPosition.dx > dragDown.dx) {
-      defaultMap.moveLeft();
-    }
-  }
-  @override
-  void onVerticalDragUpdate(DragUpdateDetails details) {
-    if (details.globalPosition.dy < dragDown.dy) {
-      defaultMap.moveDown();
-    } else if (details.globalPosition.dy > dragDown.dy) {
-      defaultMap.moveUp();
-    }
+  void onDragStart(int pointerId, Vector2 details) {
+    dragDown = Vector2(
+      camera.position.x + details.x,
+      camera.position.y + details.y,
+    );
   }
 
   @override
-  void onHorizontalDragEnd(DragEndDetails details) {
-    dragDown = Offset(0, 0);
-    defaultMap.stopMoving();
+  void onDragUpdate(int pointerId, DragUpdateDetails details) {
+    final x = dragDown.x - details.globalPosition.dx;
+    final y = dragDown.y - details.globalPosition.dy;
+    camera.snapTo(Vector2(x, y));
   }
 
   @override
-  void onVerticalDragEnd(DragEndDetails details) {
-    dragDown = Offset(0, 0);
-    defaultMap.stopMoving();
-  }
+  void onDragEnd(int pointerId, DragEndDetails details) {}
 
   Future _loadMap() async {
-    add(
-        positioner = Positioner()
-          ..x = 200
-          ..y = 200
-          ..width = 50
-          ..height = 100
-    );
+    add(positioner = Positioner()
+      ..x = 200
+      ..y = 200
+      ..width = 50
+      ..height = 100);
     add(
       defaultMap = DefaultMap()
         ..x = x

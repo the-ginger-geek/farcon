@@ -1,19 +1,20 @@
 import 'dart:math';
 
+const cubeSize = 100;
+const waterBorderSize = 10;
+const waterBorderRandomSize = 5;
+const grass = 0;
+const stone = 1;
+const sand = 2;
+const water = 3;
+
 mixin MapBuilder {
-  final cubeSize = 60;
-  final waterBorderSize = 4;
-  final waterBorderRandomSize = 5;
-  final grass = 0;
-  final stone = 1;
-  final sand = 2;
-  final water = 3;
 
   List<List<int>> buildMap() {
-    final topEdge = _generateSeedNumbers();
-    final bottomEdge = _generateSeedNumbers();
-    final leftEdge = _generateSeedNumbers();
-    final rightEdge = _generateSeedNumbers();
+    final topEdge = _generateWaterBorderNumbers();
+    final bottomEdge = _generateWaterBorderNumbers();
+    final leftEdge = _generateWaterBorderNumbers();
+    final rightEdge = _generateWaterBorderNumbers();
 
     List<List<int>> matrix = [];
 
@@ -31,13 +32,13 @@ mixin MapBuilder {
           final bottomThreshold = cubeSize - threshold;
 
           if (row < threshold) {
-            _buildSmallEdge(topEdge, column, row, rowTiles);
+            _buildEdge(topEdge, column, row, rowTiles, true);
           } else if (column < threshold) {
-            _buildSmallEdge(leftEdge, row, column, rowTiles);
+            _buildEdge(leftEdge, row, column, rowTiles, true);
           } else if (row > bottomThreshold) {
-            _buildLargeEdge(bottomEdge, column, row, rowTiles);
+            _buildEdge(bottomEdge, row, column, rowTiles, false);
           } else if (column > rightThreshold) {
-            _buildLargeEdge(rightEdge, row, column, rowTiles);
+            _buildEdge(rightEdge, column, row, rowTiles, false);
           } else {
             rowTiles.add(grass);
           }
@@ -49,7 +50,7 @@ mixin MapBuilder {
     return matrix;
   }
 
-  List<int> _generateSeedNumbers() {
+  List<int> _generateWaterBorderNumbers() {
     List<int> seedNumbers = [];
     int previousNumber = -1;
     for (int p = 0; p < 100; p++) {
@@ -81,21 +82,13 @@ mixin MapBuilder {
     }
   }
 
-  void _buildLargeEdge(List<int> bottomEdge, int column, int row, List<int> rowTiles) {
-    int rowNumber = cubeSize - bottomEdge[column];
-    if (row > rowNumber) {
-      rowTiles.add(water);
+  void _buildEdge(List<int> numbers, int row, int column, List<int> tiles, bool startEdge) {
+    int number = startEdge ? numbers[row] : cubeSize - numbers[column];
+    bool value = startEdge ? column < number : row > number;
+    if (value) {
+      tiles.add(water);
     } else {
-      rowTiles.add(grass);
-    }
-  }
-
-  void _buildSmallEdge(List<int> leftEdge, int row, int column, List<int> rowTiles) {
-    int columnNumber = leftEdge[row];
-    if (column < columnNumber) {
-      rowTiles.add(water);
-    } else {
-      rowTiles.add(grass);
+      tiles.add(grass);
     }
   }
 }

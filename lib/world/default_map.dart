@@ -20,33 +20,7 @@ final originColor = Paint()..color = const Color(0xFFFF00FF);
 final originColor2 = Paint()..color = const Color(0xFFAA55FF);
 
 class DefaultMap extends PositionComponent with MapBuilder, HasGameRef<Farcon> {
-  final String tileSprite = 'tiles.png';
-  static const double SPEED = 500;
-
-  int _horizontalDirection = 0;
-  int _verticalDirection = 0;
-
-  void moveRight() { _horizontalDirection = 1; }
-  void moveLeft() { _horizontalDirection = -1; }
-  void moveUp() { _verticalDirection = -1; }
-  void moveDown() { _verticalDirection = 1; }
-  void stopMoving() {
-    _horizontalDirection = 0;
-    _verticalDirection = 0;
-  }
-
-  @override
-  void update(double dt) {
-    super.update(dt);
-    // Calculates how much we are going to move on this iteration
-    final stepHorizontal = _horizontalDirection * SPEED * dt;
-    final stepVertical = _verticalDirection * SPEED * dt;
-    gameRef.camera.cameraSpeed = SPEED;
-      final camPos = gameRef.camera.position;
-    final x = camPos.x += stepHorizontal;
-    final y = camPos.y += stepVertical;
-    gameRef.camera.moveTo(Vector2(x, y));
-  }
+  final String mapTileSprite = 'tiles.png';
 
   @override
   Future<void> onLoad() async {
@@ -54,7 +28,7 @@ class DefaultMap extends PositionComponent with MapBuilder, HasGameRef<Farcon> {
   }
 
   Future _loadMap() async {
-    final image = await gameRef.images.load(tileSprite);
+    final image = await gameRef.images.load(mapTileSprite);
     final tileset = SpriteSheet(
       image: image,
       srcSize: Vector2.all(srcTileSize),
