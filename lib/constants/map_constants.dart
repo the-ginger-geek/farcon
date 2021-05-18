@@ -3,7 +3,7 @@ import 'package:flame/components.dart';
 
 class MapConstants {
 
-  static const scale = 1.0;
+  static const scale = 2.0;
 
   static const mapStartX = 500.0;
   static const mapStartY = 250.0;
@@ -17,7 +17,7 @@ class MapConstants {
   static const mapStartCoordinate = waterBorderSize + waterBorderRandomSize;
   static const mapEndCoordinate = cubeSize - (waterBorderSize + waterBorderRandomSize);
 
-  static const cubeSize = 120;
+  static const cubeSize = 80;
   static const waterBorderSize = 10;
   static const waterBorderRandomSize = 5;
   static const largesDamSize = 4;

@@ -11,10 +11,19 @@ import 'models/dam.dart';
 
 class DefaultMap extends PositionComponent with HasGameRef<Farcon> {
 
+  late IsometricTileMapComponent _map;
+
+
   @override
   Future<void> onLoad() async {
     await _loadMap();
   }
+
+  Block getBlock(Vector2 screenPosition) => _map.getBlock(screenPosition);
+
+  bool containsBlock(Block block) => _map.containsBlock(block);
+
+  Vector2 getBlockPosition(Block block) => _map.getBlockPosition(block);
 
   Future _loadMap() async {
     final image = await gameRef.images.load(Strings.mapTileSprite);
@@ -24,13 +33,12 @@ class DefaultMap extends PositionComponent with HasGameRef<Farcon> {
     );
 
     gameRef.add(
-      IsometricTileMapComponent(
+      _map = IsometricTileMapComponent(
         tileset,
         buildMap(),
         destTileSize: Vector2.all(MapConstants.destTileSize),
+        position: Vector2(8 * MapConstants.srcTileSize, 9.5 * MapConstants.srcTileSize),
       )
-        ..x = x
-        ..y = y,
     );
   }
 
@@ -66,7 +74,7 @@ class DefaultMap extends PositionComponent with HasGameRef<Farcon> {
   List<int> _generateWaterBorderNumbers() {
     List<int> numbers = [];
     int previousNumber = -1;
-    for (int point = 0; point < 100; point++) {
+    for (int point = 0; point < MapConstants.cubeSize; point++) {
       final randomNumber =
           Random().nextInt(MapConstants.waterBorderRandomSize) +
               MapConstants.waterBorderSize;
