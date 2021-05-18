@@ -1,4 +1,3 @@
-
 import 'dart:math';
 
 import 'package:farcon/constants/map_constants.dart';
@@ -10,9 +9,7 @@ import 'package:flame/sprite.dart';
 import 'models/dam.dart';
 
 class DefaultMap extends PositionComponent with HasGameRef<Farcon> {
-
   late IsometricTileMapComponent _map;
-
 
   @override
   Future<void> onLoad() async {
@@ -32,18 +29,15 @@ class DefaultMap extends PositionComponent with HasGameRef<Farcon> {
       srcSize: Vector2.all(MapConstants.srcTileSize),
     );
 
-    gameRef.add(
-      _map = IsometricTileMapComponent(
-        tileset,
-        buildMap(),
-        destTileSize: Vector2.all(MapConstants.destTileSize),
-        position: Vector2(8 * MapConstants.srcTileSize, 9.5 * MapConstants.srcTileSize),
-      )
-    );
+    gameRef.add(_map = IsometricTileMapComponent(
+      tileset,
+      buildMap(),
+      destTileSize: Vector2.all(MapConstants.destTileSize),
+      position: Vector2(MapConstants.xZero, MapConstants.yZero),
+    ));
   }
 
   List<List<int>> buildMap() {
-    final waterEdges = _generateWaterEdges();
     final dams = _generateDams();
 
     List<List<int>> matrix = [];
@@ -51,7 +45,6 @@ class DefaultMap extends PositionComponent with HasGameRef<Farcon> {
     for (int row = 0; row < MapConstants.cubeSize; row++) {
       List<int> rowTiles = [];
       for (int column = 0; column < MapConstants.cubeSize; column++) {
-        if (_drawEdges(column, row, rowTiles, waterEdges)) continue;
         if (_drawDams(dams, column, row, rowTiles)) continue;
 
         rowTiles.add(MapConstants.grass);
@@ -62,109 +55,13 @@ class DefaultMap extends PositionComponent with HasGameRef<Farcon> {
     return matrix;
   }
 
-  Map<int, List<int>> _generateWaterEdges() {
-    final Map<int, List<int>> waterEdges = {};
-    waterEdges[MapConstants.top] = _generateWaterBorderNumbers();
-    waterEdges[MapConstants.bottom] = _generateWaterBorderNumbers();
-    waterEdges[MapConstants.left] = _generateWaterBorderNumbers();
-    waterEdges[MapConstants.right] = _generateWaterBorderNumbers();
-    return waterEdges;
-  }
-
-  List<int> _generateWaterBorderNumbers() {
-    List<int> numbers = [];
-    int previousNumber = -1;
-    for (int point = 0; point < MapConstants.cubeSize; point++) {
-      final randomNumber =
-          Random().nextInt(MapConstants.waterBorderRandomSize) +
-              MapConstants.waterBorderSize;
-      if (previousNumber == -1) {
-        previousNumber = randomNumber;
-      } else {
-        _addNumber(numbers, previousNumber);
-        _addNumber(numbers, previousNumber);
-        if (previousNumber > randomNumber) {
-          for (int downNumber = previousNumber;
-          downNumber > randomNumber;
-          downNumber--) {
-            _addNumber(numbers, downNumber);
-          }
-        } else if (previousNumber < randomNumber) {
-          for (int upNumber = previousNumber;
-          upNumber < randomNumber;
-          upNumber++) {
-            _addNumber(numbers, upNumber);
-          }
-        }
-        previousNumber = randomNumber;
-      }
-    }
-
-    return numbers;
-  }
-
-  void _addNumber(List<int> seedNumbers, int s) {
-    if (seedNumbers.length < MapConstants.cubeSize) {
-      seedNumbers.add(s);
-    }
-  }
-
-  void _buildEdge(List<int>? numbers, int row, int column, List<int> tiles,
-      bool startEdge) {
-    final input = numbers ?? [];
-    int number = startEdge ? input[row] : MapConstants.cubeSize - input[column];
-    bool value = startEdge ? column < number : row > number;
-    if (value) {
-      tiles.add(MapConstants.water);
-    } else {
-      tiles.add(MapConstants.grass);
-    }
-  }
-
-  bool _drawEdges(
-      int column, int row, List<int> rowTiles, Map<int, List<int>> waterEdges) {
-    if (column < MapConstants.waterBorderSize ||
-        column > MapConstants.cubeSize - MapConstants.waterBorderSize ||
-        row < MapConstants.waterBorderSize ||
-        row > MapConstants.cubeSize - MapConstants.waterBorderSize) {
-      rowTiles.add(MapConstants.water);
-      return true;
-    } else {
-      final threshold =
-          MapConstants.waterBorderRandomSize + MapConstants.waterBorderSize;
-      final rightThreshold = MapConstants.cubeSize - threshold;
-      final bottomThreshold = MapConstants.cubeSize - threshold;
-      if (row < threshold) {
-        _buildEdge(waterEdges[MapConstants.top], column, row, rowTiles, true);
-        return true;
-      } else if (column < threshold) {
-        _buildEdge(waterEdges[MapConstants.left], row, column, rowTiles, true);
-        return true;
-      } else if (row > bottomThreshold) {
-        _buildEdge(
-            waterEdges[MapConstants.bottom], row, column, rowTiles, false);
-        return true;
-      } else if (column > rightThreshold) {
-        _buildEdge(
-            waterEdges[MapConstants.right], column, row, rowTiles, false);
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   List<Dam> _generateDams() {
     List<Dam> dams = [];
-    final damCount = Random().nextInt(MapConstants.damCountMax) + 1;
-    final waterBorder =
-        MapConstants.waterBorderSize + MapConstants.waterBorderRandomSize;
+    final damCount = Random().nextInt(MapConstants.damCountMax);
     for (int i = 0; i < damCount; i++) {
       final Vector2 damCenter = Vector2(
-        (Random().nextInt(MapConstants.cubeSize - waterBorder) + waterBorder)
-            .toDouble(),
-        (Random().nextInt(MapConstants.cubeSize - waterBorder) + waterBorder)
-            .toDouble(),
+        (Random().nextInt(MapConstants.cubeSize)).toDouble(),
+        (Random().nextInt(MapConstants.cubeSize)).toDouble(),
       );
       final radius = Random().nextInt(MapConstants.largesDamSize) + 3;
       dams.add(Dam(damCenter, radius));
@@ -175,13 +72,11 @@ class DefaultMap extends PositionComponent with HasGameRef<Farcon> {
   /*
    * Equation for getting dam coordinates for radius and size.
    */
-  bool _drawDams(List<Dam> dams, int column, int row, List<int> rowTiles) {
+  bool _drawDams(List<Dam> dams, int x, int y, List<int> rowTiles) {
     bool hasDam = false;
     for (Dam dam in dams) {
-      final xCalculation =
-          (column - dam.coordinates.x) * (column - dam.coordinates.x);
-      final yCalculation =
-          (row - dam.coordinates.y) * (row - dam.coordinates.y);
+      final xCalculation = (x - dam.coords.x) * (x - dam.coords.x);
+      final yCalculation = (y - dam.coords.y) * (y - dam.coords.y);
       final damSize = dam.radius * dam.radius;
       final damPoint = (xCalculation + yCalculation) <= damSize;
       if (damPoint) {

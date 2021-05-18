@@ -2,8 +2,8 @@
 import 'package:flame/game.dart';
 
 class Dam {
-  final Vector2 coordinates;
+  final Vector2 coords;
   final int radius;
 
-  Dam(this.coordinates, this.radius);
+  Dam(this.coords, this.radius);
 }

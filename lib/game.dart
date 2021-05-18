@@ -1,4 +1,3 @@
-
 import 'package:farcon/world/default_map.dart';
 import 'package:farcon/world/map_trees.dart';
 import 'package:flutter/gestures.dart';
@@ -39,10 +38,7 @@ class Farcon extends BaseGame with MultiTouchDragDetector {
   void onDragEnd(int pointerId, DragEndDetails details) {}
 
   Future _loadMap() async {
-    add(
-      defaultMap = DefaultMap(),
-    );
-
+    add(defaultMap = DefaultMap());
     add(MapTrees());
   }
 }
