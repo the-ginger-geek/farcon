@@ -5,12 +5,8 @@ class MapConstants {
 
   static const scale = 2.0;
 
-  // IsometricMap doesn't render at 0, 0 so this is a hack for now.
-  static const xZero = 8 * srcTileSize;
-  static const yZero = 9.5 * srcTileSize;
-
-  static const mapStartX = 500.0;
-  static const mapStartY = 250.0;
+  static const mapStartX = 356.0;
+  static const mapStartY = 204.0;
   static final topLeft = Vector2(mapStartX, mapStartY);
 
   static const srcTileSize = 32.0;
@@ -18,11 +14,12 @@ class MapConstants {
   static const halfSize = true;
   static const tileHeight = scale * (halfSize ? 8.0 : 16.0);
 
-  static const cubeSize = 15;
+  static const mapSize = 15;
   static const largesDamSize = 2;
   static const damCountMax = 2;
-  static const treeCountMax = 20;
-  static const treeCountMin = 10;
+  static const treeCountMax = 10;
+  static const treeCountMin = 6;
+  static const treeImageSize = 128;
 
   static const top = 1;
   static const left = 2;

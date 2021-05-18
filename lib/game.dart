@@ -15,6 +15,7 @@ class Farcon extends BaseGame with MultiTouchDragDetector {
   @override
   Future<void> onLoad() async {
     super.onLoad();
+    debugMode = true;
     await _loadMap();
     camera.screenToWorld(defaultMap.size);
   }

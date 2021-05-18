@@ -19,17 +19,22 @@ class MapTrees extends PositionComponent with HasGameRef<Farcon>, MapUtils {
     for (var treeCoordinate in coordinates) {
       final tree = Strings.treeSprites[Random().nextInt(treeSpritesCount)];
       final image = await gameRef.images.load(tree);
+      final isoPosition = cartToIso(treeCoordinate);
       final sprite = SpriteComponent.fromImage(
         image,
-        position: cartToIso(treeCoordinate),
+        position: alignCoordinateToImage(
+          isoPosition,
+          MapConstants.treeImageSize,
+          MapConstants.treeImageSize - MapConstants.destTileSize ~/ 3,
+          centerTo: CenterTo.CENTER_BOTTOM,
+        ),
       );
       await gameRef.add(sprite);
     }
   }
 
   List<Vector2> _getTreeLocations() {
-    final size =
-        MapConstants.cubeSize; //(MapConstants.cubeSize - waterBorder * 2);
+    final size = MapConstants.mapSize;
     int treeCount = Random().nextInt(MapConstants.treeCountMax);
     if (treeCount < MapConstants.treeCountMin)
       treeCount = MapConstants.treeCountMin;
