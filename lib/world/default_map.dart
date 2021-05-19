@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:farcon/constants/map_constants.dart';
 import 'package:farcon/constants/strings.dart';
 import 'package:farcon/game.dart';
+import 'package:farcon/world/utils/map_utils.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/sprite.dart';
@@ -12,12 +13,17 @@ import 'models/dam.dart';
 
 final originColor = Paint()..color = const Color(0xFFFF00FF);
 final originColor2 = Paint()..color = const Color(0xFFAA55FF);
-class DefaultMap extends PositionComponent with HasGameRef<Farcon> {
+class DefaultMap extends PositionComponent with HasGameRef<Farcon>, MapUtils {
   late IsometricTileMapComponent _map;
+  List<Vector2> waterCoordinates = [];
+  final VoidCallback? loadComplete;
+
+  DefaultMap({this.loadComplete});
 
   @override
   Future<void> onLoad() async {
     await _loadMap();
+    loadComplete?.call();
   }
 
   @override
@@ -48,7 +54,6 @@ class DefaultMap extends PositionComponent with HasGameRef<Farcon> {
       tileset,
       buildMap(),
       destTileSize: Vector2.all(MapConstants.destTileSize),
-      // position: MapConstants.topLeft,
     ));
   }
 
@@ -72,7 +77,10 @@ class DefaultMap extends PositionComponent with HasGameRef<Farcon> {
 
   List<Dam> _generateDams() {
     List<Dam> dams = [];
-    final damCount = Random().nextInt(MapConstants.damCountMax);
+    int damCount = Random().nextInt(MapConstants.damCountMax);
+
+    if (damCount < MapConstants.damCountMax) damCount = MapConstants.damCountMin;
+
     for (int i = 0; i < damCount; i++) {
       final Vector2 damCenter = Vector2(
         (Random().nextInt(MapConstants.mapSize)).toDouble(),
@@ -90,12 +98,13 @@ class DefaultMap extends PositionComponent with HasGameRef<Farcon> {
   bool _drawDams(List<Dam> dams, int x, int y, List<int> rowTiles) {
     bool hasDam = false;
     for (Dam dam in dams) {
-      final xCalculation = (x - dam.coords.x) * (x - dam.coords.x);
-      final yCalculation = (y - dam.coords.y) * (y - dam.coords.y);
+      final xCoordinate = (x - dam.coords.x) * (x - dam.coords.x);
+      final yCoordinate = (y - dam.coords.y) * (y - dam.coords.y);
       final damSize = dam.radius * dam.radius;
-      final damPoint = (xCalculation + yCalculation) <= damSize;
+      final damPoint = (xCoordinate + yCoordinate) <= damSize;
       if (damPoint) {
         rowTiles.add(MapConstants.water);
+        waterCoordinates.add(Vector2(x.toDouble(), y.toDouble()));
         hasDam = true;
       }
     }

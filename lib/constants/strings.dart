@@ -1,6 +1,7 @@
 
 class Strings {
   static const String mapTileSprite = 'tiles.png';
+  static const String selectorSprite = 'selector.png';
   static const List<String> treeSprites = [
     'trees/tree_blocks_dark_NE.png',
     'trees/tree_cone_dark_NE.png',
@@ -27,5 +28,10 @@ class Strings {
     'trees/tree_small_dark_NE.png',
     'trees/tree_thin_dark_NE.png',
   ];
-
+  static const List<String> grassSprites = [
+    'grass/grass_large_NE.png',
+    'grass/grass_large_NW.png',
+    'grass/grass_large_SE.png',
+    'grass/grass_large_SW.png',
+  ];
 }

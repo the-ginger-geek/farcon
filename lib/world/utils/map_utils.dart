@@ -8,6 +8,12 @@ mixin MapUtils {
     return Vector2(x, y);
   }
 
+  Vector2 isoToCart(Vector2 p) {
+    final x = (p.x / MapConstants.destTileSize) + (p.y / MapConstants.tileHeight);
+    final y = (p.y / MapConstants.tileHeight) - (p.x / MapConstants.destTileSize);
+    return Vector2(x, y);
+  }
+
   Vector2 alignCoordinateToImage(
       Vector2 coordinate, int imageWidth, int imageHeight,
       {CenterTo centerTo = CenterTo.CENTER}) {

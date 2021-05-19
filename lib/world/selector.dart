@@ -9,16 +9,14 @@ class Selector extends SpriteComponent {
 
   Selector(Image image)
       : super(
-    sprite: Sprite(image, srcSize: Vector2.all(32.0)),
+    sprite: Sprite(image, srcSize: Vector2.all(MapConstants.srcTileSize)),
     size: Vector2.all(MapConstants.destTileSize),
     overridePaint: BasicPalette.black.paint(),
   );
 
   @override
   void render(Canvas canvas) {
-    if (!show) {
-      return;
-    }
+    if (!show) return;
 
     super.render(canvas);
   }
