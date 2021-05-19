@@ -34,4 +34,9 @@ class Strings {
     'grass/grass_large_SE.png',
     'grass/grass_large_SW.png',
   ];
+  static const List<String> flowerSprites = [
+    'flowers/flower_purpleA_NE.png',
+    'flowers/flower_redA_NE.png',
+    'flowers/flower_yellowA_NE.png',
+  ];
 }

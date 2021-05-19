@@ -81,7 +81,6 @@ class Farcon extends BaseGame
         imageSize: MapConstants.grassImageSize,
         noDrawCoordinates: defaultMap.waterCoordinates,
         centerImageTo: CenterTo.CENTER,
-        description: 'grass',
       ));
       add(MapObjects(
         sprites: Strings.treeSprites,
@@ -89,7 +88,13 @@ class Farcon extends BaseGame
         seedCountMin: MapConstants.treeCountMin,
         imageSize: MapConstants.treeImageSize,
         noDrawCoordinates: defaultMap.waterCoordinates,
-        description: 'tree',
+      ));
+      add(MapObjects(
+        sprites: Strings.flowerSprites,
+        seedCountMax: MapConstants.flowerCountMax,
+        seedCountMin: MapConstants.flowerCountMin,
+        imageSize: MapConstants.flowerImageSize,
+        noDrawCoordinates: defaultMap.waterCoordinates,
       ));
     }));
   }

@@ -49,6 +49,7 @@ flutter:
   assets:
     - assets/images/trees/
     - assets/images/grass/
+    - assets/images/flowers/
     - assets/images/
     - assets/audio/
 

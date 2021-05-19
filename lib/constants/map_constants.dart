@@ -19,11 +19,14 @@ class MapConstants {
   static const damCountMax = 2;
   static const damCountMin = 1;
   static const treeCountMax = 10;
-  static const grassCountMax = 30;
   static const treeCountMin = 6;
+  static const grassCountMax = 30;
   static const grassCountMin = 6;
+  static const flowerCountMax = 30;
+  static const flowerCountMin = 6;
   static const treeImageSize = 128;
   static const grassImageSize = 64;
+  static const flowerImageSize = 32;
 
   static const top = 1;
   static const left = 2;

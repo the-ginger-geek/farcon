@@ -13,14 +13,12 @@ class MapObjects extends PositionComponent with HasGameRef<Farcon>, MapUtils {
   final int imageSize;
   final List<Vector2> noDrawCoordinates;
   final CenterTo centerImageTo;
-  final String description;
 
   MapObjects({
     required this.sprites,
     required this.seedCountMax,
     required this.seedCountMin,
     required this.imageSize,
-    required this.description,
     this.centerImageTo = CenterTo.CENTER_BOTTOM,
     this.noDrawCoordinates = const [],
   });
