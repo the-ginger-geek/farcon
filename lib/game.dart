@@ -1,7 +1,7 @@
 import 'package:farcon/constants/map_constants.dart';
 import 'package:farcon/constants/strings.dart';
 import 'package:farcon/world/default_map.dart';
-import 'package:farcon/world/map_objects.dart';
+import 'package:farcon/world/object_distribution/random_object_distribution.dart';
 import 'package:farcon/world/utils/map_utils.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide Image;
@@ -10,6 +10,7 @@ import 'package:flame/game.dart';
 import 'package:flame/gestures.dart';
 import 'package:flame/image_composition.dart';
 
+import 'world/object_distribution/cluster_object_distribution.dart';
 import 'world/selector.dart';
 
 class Farcon extends BaseGame
@@ -74,26 +75,31 @@ class Farcon extends BaseGame
 
   Future _loadMap() async {
     add(defaultMap = DefaultMap(loadComplete: () {
-      add(MapObjects(
+      add(RandomObjectDistribution(
         sprites: Strings.grassSprites,
         seedCountMax: MapConstants.grassCountMax,
         seedCountMin: MapConstants.grassCountMin,
         imageSize: MapConstants.grassImageSize,
+        mapSize: MapConstants.mapSize,
         noDrawCoordinates: defaultMap.waterCoordinates,
         centerImageTo: CenterTo.CENTER,
       ));
-      add(MapObjects(
+      add(ClusterObjectDistribution(
+        radiusSizeMin: 1,
+        radiusSizeMax: 2,
+        sprites: Strings.flowerSprites,
+        clusterCountMax: 5,
+        clusterCountMin: 2,
+        imageSize: MapConstants.flowerImageSize,
+        mapSize: MapConstants.mapSize,
+        noDrawCoordinates: defaultMap.waterCoordinates,
+      ));
+      add(RandomObjectDistribution(
         sprites: Strings.treeSprites,
         seedCountMax: MapConstants.treeCountMax,
         seedCountMin: MapConstants.treeCountMin,
         imageSize: MapConstants.treeImageSize,
-        noDrawCoordinates: defaultMap.waterCoordinates,
-      ));
-      add(MapObjects(
-        sprites: Strings.flowerSprites,
-        seedCountMax: MapConstants.flowerCountMax,
-        seedCountMin: MapConstants.flowerCountMin,
-        imageSize: MapConstants.flowerImageSize,
+        mapSize: MapConstants.mapSize,
         noDrawCoordinates: defaultMap.waterCoordinates,
       ));
     }));

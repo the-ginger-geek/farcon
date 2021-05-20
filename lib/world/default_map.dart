@@ -9,7 +9,7 @@ import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/sprite.dart';
 
-import 'models/dam.dart';
+import 'models/circle.dart';
 
 final originColor = Paint()..color = const Color(0xFFFF00FF);
 final originColor2 = Paint()..color = const Color(0xFFAA55FF);
@@ -75,8 +75,8 @@ class DefaultMap extends PositionComponent with HasGameRef<Farcon>, MapUtils {
     return matrix;
   }
 
-  List<Dam> _generateDams() {
-    List<Dam> dams = [];
+  List<Circle> _generateDams() {
+    List<Circle> dams = [];
     int damCount = Random().nextInt(MapConstants.damCountMax);
 
     if (damCount < MapConstants.damCountMax) damCount = MapConstants.damCountMin;
@@ -86,8 +86,8 @@ class DefaultMap extends PositionComponent with HasGameRef<Farcon>, MapUtils {
         (Random().nextInt(MapConstants.mapSize)).toDouble(),
         (Random().nextInt(MapConstants.mapSize)).toDouble(),
       );
-      final radius = Random().nextInt(MapConstants.largesDamSize) + 3;
-      dams.add(Dam(damCenter, radius));
+      final radius = Random().nextInt(MapConstants.largestDamSize) + 3;
+      dams.add(Circle(damCenter, radius));
     }
     return dams;
   }
@@ -95,9 +95,9 @@ class DefaultMap extends PositionComponent with HasGameRef<Farcon>, MapUtils {
   /*
    * Equation for getting dam coordinates for radius and size.
    */
-  bool _drawDams(List<Dam> dams, int x, int y, List<int> rowTiles) {
+  bool _drawDams(List<Circle> dams, int x, int y, List<int> rowTiles) {
     bool hasDam = false;
-    for (Dam dam in dams) {
+    for (Circle dam in dams) {
       final xCoordinate = (x - dam.coords.x) * (x - dam.coords.x);
       final yCoordinate = (y - dam.coords.y) * (y - dam.coords.y);
       final damSize = dam.radius * dam.radius;

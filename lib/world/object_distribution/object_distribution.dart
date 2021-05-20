@@ -4,33 +4,35 @@ import 'package:farcon/constants/map_constants.dart';
 import 'package:farcon/world/utils/map_utils.dart';
 import 'package:flame/components.dart';
 
-import '../game.dart';
+import '../../game.dart';
 
-class MapObjects extends PositionComponent with HasGameRef<Farcon>, MapUtils {
+abstract class ObjectDistribution extends PositionComponent with HasGameRef<Farcon>, MapUtils {
   final List<String> sprites;
   final int seedCountMax;
   final int seedCountMin;
   final int imageSize;
+  final int mapSize;
   final List<Vector2> noDrawCoordinates;
   final CenterTo centerImageTo;
 
-  MapObjects({
+  ObjectDistribution({
     required this.sprites,
     required this.seedCountMax,
     required this.seedCountMin,
     required this.imageSize,
+    required this.mapSize,
     this.centerImageTo = CenterTo.CENTER_BOTTOM,
     this.noDrawCoordinates = const [],
   });
 
   @override
   Future<void> onLoad() async {
-    await _loadObjects();
+    await loadObjects();
   }
 
-  Future _loadObjects() async {
+  Future loadObjects() async {
     int count = sprites.length;
-    final coordinates = _getLocations();
+    final coordinates = getLocations();
     for (var coordinate in coordinates) {
       final spriteString = sprites[Random().nextInt(count)];
       final image = await gameRef.images.load(spriteString);
@@ -48,27 +50,5 @@ class MapObjects extends PositionComponent with HasGameRef<Farcon>, MapUtils {
     }
   }
 
-  List<Vector2> _getLocations() {
-    final size = MapConstants.mapSize;
-    int seedCount = Random().nextInt(seedCountMax);
-    if (seedCount < seedCountMin) seedCount = seedCountMin;
-
-    List<Vector2> coordinates = [];
-    for (int i = 0; i < seedCount; i++) {
-      final coordinate = Vector2(
-        Random().nextInt(size).toDouble(),
-        Random().nextInt(size).toDouble(),
-      );
-
-      if (!noDrawCoordinates.contains(coordinate)) {
-        coordinates.add(coordinate);
-      } else {
-        seedCount++;
-      }
-    }
-
-    coordinates.sort((a, b) => a.y > b.y || a.x > b.x ? 1 : 0);
-
-    return coordinates;
-  }
+  List<Vector2> getLocations();
 }
