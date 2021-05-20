@@ -11,7 +11,6 @@ import 'package:flame/gestures.dart';
 import 'package:flame/image_composition.dart';
 
 import 'world/object_distribution/cluster_object_distribution.dart';
-import 'world/selector.dart';
 
 class Farcon extends BaseGame
     with MultiTouchDragDetector, MouseMovementDetector, MapUtils {
@@ -21,7 +20,7 @@ class Farcon extends BaseGame
   Future<void> onLoad() async {
     super.onLoad();
     // debugMode = true;
-    await _loadMap();
+    _loadMap();
 
     camera.snapTo(Vector2(
       -viewport.effectiveSize.x / 2,
@@ -47,11 +46,11 @@ class Farcon extends BaseGame
   @override
   void onDragEnd(int pointerId, DragEndDetails details) {}
 
-  Future _loadMap() async {
+  void _loadMap() {
     final blockSize = MapConstants.mapRenderBlockSize;
 
-    for (double x = 0; x < blockSize*2; x+=blockSize) {
-      for (double y = 0; y < blockSize*1; y+=blockSize) {
+    for (double x = 0; x < blockSize*4; x+=blockSize) {
+      for (double y = 0; y < blockSize*4; y+=blockSize) {
         final leftTop = Vector2(x, y);
         final grassyBlock = GrassyBlock(
             loadComplete: (waterCoordinates) {
@@ -78,7 +77,7 @@ class Farcon extends BaseGame
     add(ClusterObjectDistribution(
       leftTop: leftTop,
       radiusSizeMin: 1,
-      radiusSizeMax: 3,
+      radiusSizeMax: 5,
       sprites: AssetPaths.flowerSprites,
       clusterCountMax: 5,
       clusterCountMin: 2,
@@ -99,17 +98,18 @@ class Farcon extends BaseGame
       blockSize: blockSize,
       noDrawCoordinates: waterCoordinates,
     ));
-    // add(ClusterObjectDistribution(
-    //   radiusSizeMin: 1,
-    //   radiusSizeMax: 2,
-    //   sprites: AssetPaths.treeSprites,
-    //   clusterCountMax: 5,
-    //   clusterCountMin: 4,
-    //   priority: 2,
-    //   imageSize: MapConstants.treeImageSize,
-    //   mapSize: MapConstants.mapSize,
-    //   noDrawCoordinates: waterCoordinates,
-    // ));
+    add(ClusterObjectDistribution(
+      leftTop: leftTop,
+      radiusSizeMin: 1,
+      radiusSizeMax: 3,
+      sprites: AssetPaths.treeSprites,
+      clusterCountMax: 2,
+      clusterCountMin: 1,
+      priority: 2,
+      imageSize: MapConstants.treeImageSize,
+      blockSize: blockSize,
+      noDrawCoordinates: waterCoordinates,
+    ));
     add(RandomObjectDistribution(
       leftTop: leftTop,
       sprites: AssetPaths.treeSprites,

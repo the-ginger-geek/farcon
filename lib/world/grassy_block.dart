@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:farcon/constants/map_constants.dart';
 import 'package:farcon/constants/asset_paths.dart';
@@ -82,7 +81,11 @@ class GrassyBlock extends PositionComponent with HasGameRef<Farcon>, MapUtils {
         (Random().nextInt(leftTop.x.toInt() + mapSize)).toDouble(),
         (Random().nextInt(leftTop.y.toInt() + mapSize)).toDouble(),
       );
-      final radius = Random().nextInt(MapConstants.largestDamSize) + 3;
+
+      int radius = Random().nextInt(MapConstants.largestDamSize);
+      if (radius < MapConstants.smallestDamSize) {
+        radius = MapConstants.smallestDamSize;
+      }
       dams.add(Circle(damCenter, radius));
     }
     return dams;

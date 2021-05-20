@@ -87,8 +87,6 @@ class ClusterObjectDistribution extends ObjectDistribution {
       }
     }
 
-    print(_centerCoordinates);
-
     return _centerCoordinates;
   }
 
