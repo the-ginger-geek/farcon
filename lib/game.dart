@@ -74,7 +74,10 @@ class Farcon extends BaseGame
   }
 
   Future _loadMap() async {
-    add(defaultMap = DefaultMap(loadComplete: () {
+    add(defaultMap = DefaultMap(loadComplete: (waterCoordinates) {
+      final noDrawCoordinates = [];
+      noDrawCoordinates.addAll(waterCoordinates);
+
       add(RandomObjectDistribution(
         sprites: Strings.grassSprites,
         seedCountMax: MapConstants.grassCountMax,
@@ -90,7 +93,19 @@ class Farcon extends BaseGame
         sprites: Strings.flowerSprites,
         clusterCountMax: 5,
         clusterCountMin: 2,
+        priority: 1,
         imageSize: MapConstants.flowerImageSize,
+        mapSize: MapConstants.mapSize,
+        noDrawCoordinates: defaultMap.waterCoordinates,
+      ));
+      add(ClusterObjectDistribution(
+        radiusSizeMin: 1,
+        radiusSizeMax: 3,
+        sprites: Strings.treeSprites,
+        clusterCountMax: 5,
+        clusterCountMin: 4,
+        priority: 2,
+        imageSize: MapConstants.treeImageSize,
         mapSize: MapConstants.mapSize,
         noDrawCoordinates: defaultMap.waterCoordinates,
       ));
@@ -99,6 +114,7 @@ class Farcon extends BaseGame
         seedCountMax: MapConstants.treeCountMax,
         seedCountMin: MapConstants.treeCountMin,
         imageSize: MapConstants.treeImageSize,
+        priority: 3,
         mapSize: MapConstants.mapSize,
         noDrawCoordinates: defaultMap.waterCoordinates,
       ));

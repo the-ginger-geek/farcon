@@ -11,19 +11,19 @@ import 'package:flame/sprite.dart';
 
 import 'models/circle.dart';
 
-final originColor = Paint()..color = const Color(0xFFFF00FF);
-final originColor2 = Paint()..color = const Color(0xFFAA55FF);
+final originColor = Paint()..color = const Color(0xFFf5bc42);
+final originColor2 = Paint()..color = const Color(0xFFf54260);
 class DefaultMap extends PositionComponent with HasGameRef<Farcon>, MapUtils {
   late IsometricTileMapComponent _map;
   List<Vector2> waterCoordinates = [];
-  final VoidCallback? loadComplete;
+  final Function(List<Vector2> noDrawCoordinates)? loadComplete;
 
   DefaultMap({this.loadComplete});
 
   @override
   Future<void> onLoad() async {
     await _loadMap();
-    loadComplete?.call();
+    loadComplete?.call(waterCoordinates);
   }
 
   @override

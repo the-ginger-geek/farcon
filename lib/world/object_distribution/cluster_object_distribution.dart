@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:farcon/constants/map_constants.dart';
 import 'package:farcon/world/models/circle.dart';
 import 'package:farcon/world/object_distribution/object_distribution.dart';
 import 'package:farcon/world/utils/map_utils.dart';
@@ -18,14 +17,18 @@ class ClusterObjectDistribution extends ObjectDistribution {
     required int clusterCountMin,
     required int imageSize,
     required int mapSize,
+    int priority = 0,
     CenterTo centerImageTo = CenterTo.CENTER_BOTTOM,
     List<Vector2> noDrawCoordinates = const [],
+    Function(List<Vector2> distributionCoordinates)? callback,
   }) : super(
           sprites: sprites,
           seedCountMin: clusterCountMin,
           seedCountMax: clusterCountMax,
           imageSize: imageSize,
           mapSize: mapSize,
+          priority: priority,
+          callback: callback,
           centerImageTo: centerImageTo,
           noDrawCoordinates: noDrawCoordinates,
         );
@@ -75,7 +78,14 @@ class ClusterObjectDistribution extends ObjectDistribution {
       int radius = Random().nextInt(radiusSizeMin);
       if (radius < radiusSizeMin) radius = radiusSizeMin;
 
-      _centerCoordinates.add(Circle(center, radius));
+      if (center.x - radius > 0 &&
+          center.x + radius < mapSize &&
+          center.y - radius > 0 &&
+          center.y + radius < mapSize) {
+        _centerCoordinates.add(Circle(center, radius));
+      } else {
+        count++;
+      }
     }
 
     print(_centerCoordinates);

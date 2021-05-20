@@ -6,14 +6,20 @@ import 'package:flame/components.dart';
 
 import '../../game.dart';
 
-abstract class ObjectDistribution extends PositionComponent with HasGameRef<Farcon>, MapUtils {
+abstract class ObjectDistribution extends PositionComponent
+    with HasGameRef<Farcon>, MapUtils {
+  @override
+  final int priority;
+
   final List<String> sprites;
   final int seedCountMax;
   final int seedCountMin;
   final int imageSize;
   final int mapSize;
-  final List<Vector2> noDrawCoordinates;
   final CenterTo centerImageTo;
+  final List<Vector2> noDrawCoordinates;
+  final List<Vector2> distributionCoordinates = [];
+  final Function(List<Vector2> distributionCoordinates)? callback;
 
   ObjectDistribution({
     required this.sprites,
@@ -21,6 +27,8 @@ abstract class ObjectDistribution extends PositionComponent with HasGameRef<Farc
     required this.seedCountMin,
     required this.imageSize,
     required this.mapSize,
+    required this.priority,
+    this.callback,
     this.centerImageTo = CenterTo.CENTER_BOTTOM,
     this.noDrawCoordinates = const [],
   });
@@ -28,12 +36,15 @@ abstract class ObjectDistribution extends PositionComponent with HasGameRef<Farc
   @override
   Future<void> onLoad() async {
     await loadObjects();
+    callback?.call(distributionCoordinates);
   }
 
   Future loadObjects() async {
     int count = sprites.length;
     final coordinates = getLocations();
     for (var coordinate in coordinates) {
+      distributionCoordinates.add(coordinate);
+
       final spriteString = sprites[Random().nextInt(count)];
       final image = await gameRef.images.load(spriteString);
       final isoPosition = cartToIso(coordinate);

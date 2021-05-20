@@ -11,14 +11,18 @@ class RandomObjectDistribution extends ObjectDistribution {
     required int seedCountMin,
     required int imageSize,
     required int mapSize,
+    int priority = 0,
     CenterTo centerImageTo = CenterTo.CENTER_BOTTOM,
     List<Vector2> noDrawCoordinates = const [],
+    Function(List<Vector2> distributionCoordinates)? callback,
   }) : super(
           sprites: sprites,
           seedCountMin: seedCountMin,
           seedCountMax: seedCountMax,
           imageSize: imageSize,
           mapSize: mapSize,
+          priority: priority,
+          callback: callback,
           centerImageTo: centerImageTo,
           noDrawCoordinates: noDrawCoordinates,
         );
