@@ -9,25 +9,81 @@ import 'package:flame/extensions.dart';
 import 'package:flame/sprite.dart';
 
 import 'models/circle.dart';
+import 'object_distribution/cluster_object_distribution.dart';
+import 'object_distribution/random_object_distribution.dart';
 
 class GrassyBlock extends PositionComponent with HasGameRef<Farcon>, MapUtils {
   late IsometricTileMapComponent _map;
-  final int mapSize;
+  final int blockSize;
   final Vector2 leftTop;
 
   List<Vector2> waterCoordinates = [];
-  final Function(List<Vector2> noDrawCoordinates)? loadComplete;
 
   GrassyBlock({
-    required this.mapSize,
+    required this.blockSize,
     required this.leftTop,
-    this.loadComplete,
   });
 
   @override
   Future<void> onLoad() async {
     await _loadMap();
-    loadComplete?.call(waterCoordinates);
+
+    gameRef.add(RandomObjectDistribution(
+      leftTop: leftTop,
+      sprites: AssetPaths.grassSprites,
+      seedCountMax: MapConstants.grassCountMax,
+      seedCountMin: MapConstants.grassCountMin,
+      imageSize: MapConstants.grassImageSize,
+      blockSize: blockSize,
+      noDrawCoordinates: waterCoordinates,
+      centerImageTo: CenterTo.CENTER,
+    ));
+    gameRef.add(ClusterObjectDistribution(
+      leftTop: leftTop,
+      radiusSizeMin: 1,
+      radiusSizeMax: 5,
+      sprites: AssetPaths.flowerSprites,
+      clusterCountMax: 5,
+      clusterCountMin: 2,
+      priority: 1,
+      imageSize: MapConstants.flowerImageSize,
+      blockSize: blockSize,
+      noDrawCoordinates: waterCoordinates,
+    ));
+    gameRef.add(ClusterObjectDistribution(
+      leftTop: leftTop,
+      radiusSizeMin: 1,
+      radiusSizeMax: 2,
+      sprites: AssetPaths.mushroomSprites,
+      clusterCountMax: 3,
+      clusterCountMin: 0,
+      priority: 1,
+      imageSize: MapConstants.mushroomImageSize,
+      blockSize: blockSize,
+      noDrawCoordinates: waterCoordinates,
+    ));
+    gameRef.add(ClusterObjectDistribution(
+      leftTop: leftTop,
+      radiusSizeMin: 1,
+      radiusSizeMax: 3,
+      sprites: AssetPaths.treeSprites,
+      clusterCountMax: 2,
+      clusterCountMin: 1,
+      priority: 2,
+      imageSize: MapConstants.treeImageSize,
+      blockSize: blockSize,
+      noDrawCoordinates: waterCoordinates,
+    ));
+    gameRef.add(RandomObjectDistribution(
+      leftTop: leftTop,
+      sprites: AssetPaths.treeSprites,
+      seedCountMax: MapConstants.treeCountMax,
+      seedCountMin: MapConstants.treeCountMin,
+      imageSize: MapConstants.treeImageSize,
+      priority: 3,
+      blockSize: blockSize,
+      noDrawCoordinates: waterCoordinates,
+    ));
   }
 
   Block getBlock(Vector2 screenPosition) => _map.getBlock(screenPosition);
@@ -56,9 +112,9 @@ class GrassyBlock extends PositionComponent with HasGameRef<Farcon>, MapUtils {
 
     List<List<int>> matrix = [];
 
-    for (double row = leftTop.y; row < leftTop.y + mapSize; row++) {
+    for (double row = leftTop.y; row < leftTop.y + blockSize; row++) {
       List<int> rowTiles = [];
-      for (double column = leftTop.x; column < leftTop.x + mapSize; column++) {
+      for (double column = leftTop.x; column < leftTop.x + blockSize; column++) {
         if (_drawDams(dams, column, row, rowTiles)) continue;
 
         rowTiles.add(MapConstants.grass);
@@ -78,8 +134,8 @@ class GrassyBlock extends PositionComponent with HasGameRef<Farcon>, MapUtils {
 
     for (int i = 0; i < damCount; i++) {
       final Vector2 damCenter = Vector2(
-        (Random().nextInt(leftTop.x.toInt() + mapSize)).toDouble(),
-        (Random().nextInt(leftTop.y.toInt() + mapSize)).toDouble(),
+        (Random().nextInt(leftTop.x.toInt() + blockSize)).toDouble(),
+        (Random().nextInt(leftTop.y.toInt() + blockSize)).toDouble(),
       );
 
       int radius = Random().nextInt(MapConstants.largestDamSize);
