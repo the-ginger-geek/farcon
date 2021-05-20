@@ -14,19 +14,22 @@ class MapConstants {
   static const halfSize = true;
   static const tileHeight = scale * (halfSize ? 8.0 : 16.0);
 
-  static const mapSize = 15;
+  static const mapRenderBlockSize = 15;
   static const largestDamSize = 2;
   static const damCountMax = 2;
   static const damCountMin = 1;
-  static const treeCountMax = 10;
-  static const treeCountMin = 6;
+  static const treeCountMax = 18;
+  static const treeCountMin = 10;
   static const grassCountMax = 30;
   static const grassCountMin = 6;
   static const flowerCountMax = 30;
   static const flowerCountMin = 6;
+  static const mushroomCountMax = 10;
+  static const mushroomCountMin = 6;
   static const treeImageSize = 128;
   static const grassImageSize = 64;
   static const flowerImageSize = 32;
+  static const mushroomImageSize = 32;
 
   static const top = 1;
   static const left = 2;

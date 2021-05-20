@@ -10,12 +10,12 @@ abstract class ObjectDistribution extends PositionComponent
     with HasGameRef<Farcon>, MapUtils {
   @override
   final int priority;
-
+  final Vector2 leftTop;
   final List<String> sprites;
   final int seedCountMax;
   final int seedCountMin;
   final int imageSize;
-  final int mapSize;
+  final int blockSIze;
   final CenterTo centerImageTo;
   final List<Vector2> noDrawCoordinates;
   final List<Vector2> distributionCoordinates = [];
@@ -23,10 +23,11 @@ abstract class ObjectDistribution extends PositionComponent
 
   ObjectDistribution({
     required this.sprites,
+    required this.leftTop,
     required this.seedCountMax,
     required this.seedCountMin,
     required this.imageSize,
-    required this.mapSize,
+    required this.blockSIze,
     required this.priority,
     this.callback,
     this.centerImageTo = CenterTo.CENTER_BOTTOM,

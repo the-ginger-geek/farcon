@@ -12,21 +12,23 @@ class ClusterObjectDistribution extends ObjectDistribution {
   ClusterObjectDistribution({
     required this.radiusSizeMin,
     required this.radiusSizeMax,
+    required Vector2 leftTop,
     required List<String> sprites,
     required int clusterCountMax,
     required int clusterCountMin,
     required int imageSize,
-    required int mapSize,
+    required int blockSize,
     int priority = 0,
     CenterTo centerImageTo = CenterTo.CENTER_BOTTOM,
     List<Vector2> noDrawCoordinates = const [],
     Function(List<Vector2> distributionCoordinates)? callback,
   }) : super(
           sprites: sprites,
+          leftTop: leftTop,
           seedCountMin: clusterCountMin,
           seedCountMax: clusterCountMax,
           imageSize: imageSize,
-          mapSize: mapSize,
+          blockSIze: blockSize,
           priority: priority,
           callback: callback,
           centerImageTo: centerImageTo,
@@ -37,8 +39,8 @@ class ClusterObjectDistribution extends ObjectDistribution {
   List<Vector2> getLocations() {
     List<Vector2> coordinates = [];
     final centerCoordinates = _generateClusterCenterPoints();
-    for (int x = 0; x < mapSize; x++) {
-      for (int y = 0; y < mapSize; y++) {
+    for (int x = leftTop.x.toInt(); x < leftTop.x + blockSIze; x++) {
+      for (int y = leftTop.y.toInt(); y < leftTop.y + blockSIze; y++) {
         if (_addCoordinate(centerCoordinates, x, y, coordinates)) continue;
       }
     }
@@ -71,17 +73,14 @@ class ClusterObjectDistribution extends ObjectDistribution {
     if (count < seedCountMax) count = seedCountMin;
 
     for (int i = 0; i < count; i++) {
-      final Vector2 center = Vector2(
-        (Random().nextInt(mapSize)).toDouble(),
-        (Random().nextInt(mapSize)).toDouble(),
-      );
+      Vector2 center = _getRandomCoordinate();
       int radius = Random().nextInt(radiusSizeMin);
       if (radius < radiusSizeMin) radius = radiusSizeMin;
 
-      if (center.x - radius > 0 &&
-          center.x + radius < mapSize &&
-          center.y - radius > 0 &&
-          center.y + radius < mapSize) {
+      if (center.x - radius > leftTop.x &&
+          center.x + radius < leftTop.x + blockSIze &&
+          center.y - radius > leftTop.y &&
+          center.y + radius < leftTop.y + blockSIze) {
         _centerCoordinates.add(Circle(center, radius));
       } else {
         count++;
@@ -91,5 +90,13 @@ class ClusterObjectDistribution extends ObjectDistribution {
     print(_centerCoordinates);
 
     return _centerCoordinates;
+  }
+
+  Vector2 _getRandomCoordinate() {
+    final Vector2 center = Vector2(
+      (Random().nextInt(leftTop.x.toInt() + blockSIze)).toDouble(),
+      (Random().nextInt(leftTop.y.toInt() + blockSIze)).toDouble(),
+    );
+    return center;
   }
 }

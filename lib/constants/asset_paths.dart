@@ -1,5 +1,5 @@
 
-class Strings {
+class AssetPaths {
   static const String mapTileSprite = 'tiles.png';
   static const String selectorSprite = 'selector.png';
   static const List<String> treeSprites = [
@@ -38,5 +38,10 @@ class Strings {
     'flowers/flower_purpleA_NE.png',
     'flowers/flower_redA_NE.png',
     'flowers/flower_yellowA_NE.png',
+  ];
+  static const List<String> mushroomSprites = [
+    'mushrooms/mushroom_red_NE.png',
+    'mushrooms/mushroom_redGroup_NE.png',
+    'mushrooms/mushroom_redTall_NE.png',
   ];
 }

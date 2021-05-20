@@ -7,20 +7,22 @@ import 'package:flame/components.dart';
 class RandomObjectDistribution extends ObjectDistribution {
   RandomObjectDistribution({
     required List<String> sprites,
+    required Vector2 leftTop,
     required int seedCountMax,
     required int seedCountMin,
     required int imageSize,
-    required int mapSize,
+    required int blockSize,
     int priority = 0,
     CenterTo centerImageTo = CenterTo.CENTER_BOTTOM,
     List<Vector2> noDrawCoordinates = const [],
     Function(List<Vector2> distributionCoordinates)? callback,
   }) : super(
           sprites: sprites,
+          leftTop: leftTop,
           seedCountMin: seedCountMin,
           seedCountMax: seedCountMax,
           imageSize: imageSize,
-          mapSize: mapSize,
+          blockSIze: blockSize,
           priority: priority,
           callback: callback,
           centerImageTo: centerImageTo,
@@ -29,18 +31,17 @@ class RandomObjectDistribution extends ObjectDistribution {
 
   @override
   List<Vector2> getLocations() {
-    final size = mapSize;
     int seedCount = Random().nextInt(seedCountMax);
     if (seedCount < seedCountMin) seedCount = seedCountMin;
 
     List<Vector2> coordinates = [];
     for (int i = 0; i < seedCount; i++) {
-      final coordinate = Vector2(
-        Random().nextInt(size).toDouble(),
-        Random().nextInt(size).toDouble(),
-      );
-
-      if (!noDrawCoordinates.contains(coordinate)) {
+      Vector2 coordinate = _getRandomCoordinate();
+      if (!noDrawCoordinates.contains(coordinate) &&
+          coordinate.x > leftTop.x &&
+          coordinate.x < leftTop.x + blockSIze &&
+          coordinate.y > leftTop.y &&
+          coordinate.y < leftTop.y + blockSIze) {
         coordinates.add(coordinate);
       } else {
         seedCount++;
@@ -50,5 +51,13 @@ class RandomObjectDistribution extends ObjectDistribution {
     coordinates.sort((a, b) => a.y > b.y || a.x > b.x ? 1 : 0);
 
     return coordinates;
+  }
+
+  Vector2 _getRandomCoordinate() {
+    final coordinate = Vector2(
+      Random().nextInt(leftTop.x.toInt() + blockSIze).toDouble(),
+      Random().nextInt(leftTop.y.toInt() + blockSIze).toDouble(),
+    );
+    return coordinate;
   }
 }

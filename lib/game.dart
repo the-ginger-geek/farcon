@@ -1,6 +1,6 @@
 import 'package:farcon/constants/map_constants.dart';
-import 'package:farcon/constants/strings.dart';
-import 'package:farcon/world/default_map.dart';
+import 'package:farcon/constants/asset_paths.dart';
+import 'package:farcon/world/grassy_block.dart';
 import 'package:farcon/world/object_distribution/random_object_distribution.dart';
 import 'package:farcon/world/utils/map_utils.dart';
 import 'package:flutter/gestures.dart';
@@ -15,9 +15,6 @@ import 'world/selector.dart';
 
 class Farcon extends BaseGame
     with MultiTouchDragDetector, MouseMovementDetector, MapUtils {
-  late DefaultMap defaultMap;
-  late Selector selector;
-
   Vector2 dragDown = Vector2(0, 0);
 
   @override
@@ -25,10 +22,6 @@ class Farcon extends BaseGame
     super.onLoad();
     // debugMode = true;
     await _loadMap();
-
-    final selectorImage = await images.load(Strings.selectorSprite);
-    add(selector = Selector(selectorImage));
-    print('Viewport [size: ${viewport.effectiveSize}]');
 
     camera.snapTo(Vector2(
       -viewport.effectiveSize.x / 2,
@@ -54,70 +47,78 @@ class Farcon extends BaseGame
   @override
   void onDragEnd(int pointerId, DragEndDetails details) {}
 
-  @override
-  void onMouseMove(PointerHoverEvent event) {
-    final screenPosition = event.position;
-    final cursorPosition = Vector2(screenPosition.dx + camera.position.x,
-        screenPosition.dy + camera.position.y);
-    _moveSelector(cursorPosition);
-  }
-
-  void _moveSelector(Vector2 cursorPosition) {
-    final selectorPosition = Vector2(cursorPosition.x - selector.width / 2,
-        cursorPosition.y - selector.height / 2);
-    final block = defaultMap.getBlock(selectorPosition);
-    bool hasBlock = defaultMap.containsBlock(block);
-    selector.show = hasBlock;
-
-    final position = cartToIso(Vector2(block.x.toDouble(), block.y.toDouble()));
-    selector.position.setFrom(position);
-  }
-
   Future _loadMap() async {
-    add(defaultMap = DefaultMap(loadComplete: (waterCoordinates) {
-      final noDrawCoordinates = [];
-      noDrawCoordinates.addAll(waterCoordinates);
+    final blockSize = MapConstants.mapRenderBlockSize;
 
-      add(RandomObjectDistribution(
-        sprites: Strings.grassSprites,
-        seedCountMax: MapConstants.grassCountMax,
-        seedCountMin: MapConstants.grassCountMin,
-        imageSize: MapConstants.grassImageSize,
-        mapSize: MapConstants.mapSize,
-        noDrawCoordinates: defaultMap.waterCoordinates,
-        centerImageTo: CenterTo.CENTER,
-      ));
-      add(ClusterObjectDistribution(
-        radiusSizeMin: 1,
-        radiusSizeMax: 2,
-        sprites: Strings.flowerSprites,
-        clusterCountMax: 5,
-        clusterCountMin: 2,
-        priority: 1,
-        imageSize: MapConstants.flowerImageSize,
-        mapSize: MapConstants.mapSize,
-        noDrawCoordinates: defaultMap.waterCoordinates,
-      ));
-      add(ClusterObjectDistribution(
-        radiusSizeMin: 1,
-        radiusSizeMax: 3,
-        sprites: Strings.treeSprites,
-        clusterCountMax: 5,
-        clusterCountMin: 4,
-        priority: 2,
-        imageSize: MapConstants.treeImageSize,
-        mapSize: MapConstants.mapSize,
-        noDrawCoordinates: defaultMap.waterCoordinates,
-      ));
-      add(RandomObjectDistribution(
-        sprites: Strings.treeSprites,
-        seedCountMax: MapConstants.treeCountMax,
-        seedCountMin: MapConstants.treeCountMin,
-        imageSize: MapConstants.treeImageSize,
-        priority: 3,
-        mapSize: MapConstants.mapSize,
-        noDrawCoordinates: defaultMap.waterCoordinates,
-      ));
-    }));
+    for (double x = 0; x < blockSize*2; x+=blockSize) {
+      for (double y = 0; y < blockSize*1; y+=blockSize) {
+        final leftTop = Vector2(x, y);
+        final grassyBlock = GrassyBlock(
+            loadComplete: (waterCoordinates) {
+              _grassyBlockBody(leftTop, blockSize, waterCoordinates);
+            },
+            leftTop: leftTop,
+            mapSize: blockSize);
+        add(grassyBlock);
+      }
+    }
+  }
+
+  void _grassyBlockBody(Vector2 leftTop, int blockSize, List<Vector2> waterCoordinates) {
+    add(RandomObjectDistribution(
+      leftTop: leftTop,
+      sprites: AssetPaths.grassSprites,
+      seedCountMax: MapConstants.grassCountMax,
+      seedCountMin: MapConstants.grassCountMin,
+      imageSize: MapConstants.grassImageSize,
+      blockSize: blockSize,
+      noDrawCoordinates: waterCoordinates,
+      centerImageTo: CenterTo.CENTER,
+    ));
+    add(ClusterObjectDistribution(
+      leftTop: leftTop,
+      radiusSizeMin: 1,
+      radiusSizeMax: 3,
+      sprites: AssetPaths.flowerSprites,
+      clusterCountMax: 5,
+      clusterCountMin: 2,
+      priority: 1,
+      imageSize: MapConstants.flowerImageSize,
+      blockSize: blockSize,
+      noDrawCoordinates: waterCoordinates,
+    ));
+    add(ClusterObjectDistribution(
+      leftTop: leftTop,
+      radiusSizeMin: 1,
+      radiusSizeMax: 2,
+      sprites: AssetPaths.mushroomSprites,
+      clusterCountMax: 3,
+      clusterCountMin: 0,
+      priority: 1,
+      imageSize: MapConstants.mushroomImageSize,
+      blockSize: blockSize,
+      noDrawCoordinates: waterCoordinates,
+    ));
+    // add(ClusterObjectDistribution(
+    //   radiusSizeMin: 1,
+    //   radiusSizeMax: 2,
+    //   sprites: AssetPaths.treeSprites,
+    //   clusterCountMax: 5,
+    //   clusterCountMin: 4,
+    //   priority: 2,
+    //   imageSize: MapConstants.treeImageSize,
+    //   mapSize: MapConstants.mapSize,
+    //   noDrawCoordinates: waterCoordinates,
+    // ));
+    add(RandomObjectDistribution(
+      leftTop: leftTop,
+      sprites: AssetPaths.treeSprites,
+      seedCountMax: MapConstants.treeCountMax,
+      seedCountMin: MapConstants.treeCountMin,
+      imageSize: MapConstants.treeImageSize,
+      priority: 3,
+      blockSize: blockSize,
+      noDrawCoordinates: waterCoordinates,
+    ));
   }
 }
