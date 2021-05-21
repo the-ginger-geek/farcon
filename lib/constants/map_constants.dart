@@ -14,7 +14,7 @@ class MapConstants {
   static const halfSize = true;
   static const tileHeight = scale * (halfSize ? 8.0 : 16.0);
 
-  static const mapRenderBlockSize = 25;
+  static const mapRenderBlockSize = 15;
   static const largestDamSize = 7;
   static const smallestDamSize = 1;
   static const damCountMax = 2;

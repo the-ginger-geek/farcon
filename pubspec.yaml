@@ -51,6 +51,7 @@ flutter:
     - assets/images/grass/
     - assets/images/flowers/
     - assets/images/mushrooms/
+    - assets/images/characters/
     - assets/images/
     - assets/audio/
 

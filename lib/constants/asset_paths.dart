@@ -44,4 +44,8 @@ class AssetPaths {
     'mushrooms/mushroom_redGroup_NE.png',
     'mushrooms/mushroom_redTall_NE.png',
   ];
+  static const String femaleAdventurer = 'characters/character_femaleAdventurer_sheet.png';
+  static const String maleAdventurer = 'characters/character_femaleAdventurer_sheet.png';
+  static const String robot = 'characters/character_robot_sheet.png';
+  static const String zombie = 'characters/character_zombie_sheet.png';
 }

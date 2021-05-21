@@ -114,7 +114,9 @@ class GrassyBlock extends PositionComponent with HasGameRef<Farcon>, MapUtils {
 
     for (double row = leftTop.y; row < leftTop.y + blockSize; row++) {
       List<int> rowTiles = [];
-      for (double column = leftTop.x; column < leftTop.x + blockSize; column++) {
+      for (double column = leftTop.x;
+          column < leftTop.x + blockSize;
+          column++) {
         if (_drawDams(dams, column, row, rowTiles)) continue;
 
         rowTiles.add(MapConstants.grass);
