@@ -7,20 +7,17 @@ import 'package:farcon/world/utils/map_utils.dart';
 import 'package:flame/components.dart';
 import 'package:flame/joystick.dart';
 import 'package:flame/keyboard.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flame/image_composition.dart';
-import '';
 
 import 'constants/asset_paths.dart';
-import 'controls/joystick_player.dart';
 
 class Farcon extends BaseGame
     with HasDraggableComponents, KeyboardEvents, MapUtils {
   Vector2 dragDown = Vector2(0, 0);
-  late Character femaleCharacter;
+  late Character character;
   late JoystickComponent joystick;
 
   @override
@@ -29,21 +26,16 @@ class Farcon extends BaseGame
     // debugMode = true;
     _loadMap();
     
-    femaleCharacter = Character(
-      characterPath: AssetPaths.femaleAdventurer,
+    character = Character(
+      characterPath: AssetPaths.robot,
       characterHeight: CharacterConstants.characterSheetHeight / CharacterConstants.characterSheetRowCount,
       characterWidth: CharacterConstants.characterSheetWidth / CharacterConstants.characterSheetColumnCount,
     );
-    
-    final joystickPlayer = JoystickPlayer();
-    joystick = Control(this)..addObserver(femaleCharacter)..addObserver(joystickPlayer);
 
-    add(femaleCharacter);
-    add(joystickPlayer);
+    joystick = Control(this)..addObserver(character);
+    add(character);
     add(joystick);
 
-
-    // camera.followComponent(femaleCharacter);
     camera.snapTo(Vector2(
       -viewport.effectiveSize.x / 2,
       -viewport.effectiveSize.y / 3,
@@ -94,6 +86,13 @@ class Farcon extends BaseGame
 
   @override
   void onKeyEvent(RawKeyEvent event) {
-    femaleCharacter.keyMove(event.isKeyPressed(event.logicalKey) ? event.logicalKey.keyLabel : '');
+    if (event.isKeyPressed(event.logicalKey)) {
+      camera.followComponent(character);
+      character.keyMove(event.logicalKey.keyLabel);
+    } else {
+      camera.resetMovement();
+      character.keyMove('');
+    }
+
   }
 }

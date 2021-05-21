@@ -1,6 +1,3 @@
-import 'dart:math';
-import 'dart:ui';
-
 import 'package:farcon/game.dart';
 import 'package:farcon/world/utils/map_utils.dart';
 import 'package:flame/components.dart';
@@ -18,7 +15,7 @@ class Character extends PositionComponent
   late SpriteAnimationComponent _spriteAnimationComponent;
 
   Vector2 characterPosition = Vector2(0, 0);
-  double currentSpeed = 50;
+  double currentSpeed = 0;
   double movementAngle = 0;
 
   CharacterState characterState = CharacterState.IDLE;
@@ -84,12 +81,11 @@ class Character extends PositionComponent
     }
   }
 
-  void _determineAngle(double angle) {
-    movementAngle = angle;
-    if (movementAngle < 0 && movementAngle > -1 ||
-        movementAngle > 0 && movementAngle < 1) direction = Direction.RIGHT;
-    if (movementAngle < 3 && movementAngle > 1 ||
-        movementAngle > -3 && movementAngle < -1) direction = Direction.LEFT;
+  void updateState(CharacterState state) {
+    if (state != characterState) {
+      characterState = state;
+      _spriteAnimationComponent.animation = _getAnimation(_spriteSheet);
+    }
   }
 
   void keyMove(String key) {
@@ -97,15 +93,15 @@ class Character extends PositionComponent
       case 'A':
         {
           currentSpeed = speed;
-          updateState(CharacterState.MOVE);
           direction = Direction.LEFT;
+          updateState(CharacterState.MOVE);
           break;
         }
       case 'D':
         {
           currentSpeed = speed;
-          updateState(CharacterState.MOVE);
           direction = Direction.RIGHT;
+          updateState(CharacterState.MOVE);
           break;
         }
       case 'W':
@@ -118,41 +114,40 @@ class Character extends PositionComponent
       case 'S':
         {
           currentSpeed = speed;
-          updateState(CharacterState.MOVE);
           direction = Direction.DOWN;
+          updateState(CharacterState.MOVE);
           break;
         }
       default: updateState(CharacterState.IDLE);
     }
-
-    updateState(characterState);
   }
 
-  void updateState(CharacterState state) {
-    if (state != characterState) {
-      characterState = state;
-      _spriteAnimationComponent.animation = _getAnimation(_spriteSheet);
+  void _determineAngle(double angle) {
+    movementAngle = angle;
+    print(angle);
+    if (movementAngle < 0 && movementAngle > -1 ||
+        movementAngle > 0 && movementAngle < 1) {
+      direction = Direction.RIGHT;
+    } else if (movementAngle < 3 && movementAngle > 2 ||
+        movementAngle > -3 && movementAngle < -2) {
+      direction = Direction.LEFT;
+    } else if (movementAngle < 2 && movementAngle > 1) {
+      direction = Direction.DOWN;
+    } else if (movementAngle > -2 && movementAngle < -1) {
+      direction = Direction.UP;
     }
   }
 
   void _moveFromAngle(double dtUpdate) {
     final updateSpeed = currentSpeed * dtUpdate;
     if (direction == Direction.LEFT) {
-      final cartPos =
-          isoToCart(Vector2(characterPosition.x, characterPosition.y));
-      print('cartPos[$cartPos]');
-      final updatedPos =
-          cartToIso(Vector2(cartPos.x - updateSpeed, cartPos.y + updateSpeed));
-      characterPosition = Vector2(characterPosition.x - updateSpeed, characterPosition.y + updateSpeed);
-      print('moveLeft[$characterPosition]');
+      characterPosition = Vector2(characterPosition.x - updateSpeed, characterPosition.y);
     } else if (direction == Direction.RIGHT) {
-      final cartPos =
-          isoToCart(Vector2(characterPosition.x, characterPosition.y));
-      print('cartPos[$cartPos]');
-      final updatedPos =
-          cartToIso(Vector2(cartPos.x + updateSpeed, cartPos.y - updateSpeed));
-      characterPosition = Vector2(characterPosition.x + updateSpeed, characterPosition.y - updateSpeed);
-      print('moveRight[$characterPosition]');
+      characterPosition = Vector2(characterPosition.x + updateSpeed, characterPosition.y);
+    } else if (direction == Direction.UP) {
+      characterPosition = Vector2(characterPosition.x, characterPosition.y - updateSpeed);
+    } else if (direction == Direction.DOWN) {
+      characterPosition = Vector2(characterPosition.x, characterPosition.y + updateSpeed);
     }
 
     position = characterPosition;
@@ -169,11 +164,11 @@ class Character extends PositionComponent
         break;
 
       case CharacterState.MOVE:
-        if (direction == Direction.LEFT) {
+        if (direction == Direction.LEFT || direction == Direction.UP) {
           characterAnimation = spriteSheet
               .createAnimation(row: 5, stepTime: 0.1, from: 1, to: 8)
               .reversed();
-        } else if (direction == Direction.RIGHT) {
+        } else if (direction == Direction.RIGHT || direction == Direction.DOWN) {
           characterAnimation = spriteSheet.createAnimation(
               row: 4, stepTime: 0.1, from: 1, to: 8);
         }
@@ -182,7 +177,7 @@ class Character extends PositionComponent
       case CharacterState.IDLE:
       default:
         characterAnimation = spriteSheet
-            .createAnimation(row: 3, stepTime: 0.2, from: 0, to: 2)
+            .createAnimation(row: 0, stepTime: 0.2, from: 0, to: 1)
             .reversed();
         break;
     }
