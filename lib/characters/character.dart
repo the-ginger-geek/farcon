@@ -1,12 +1,15 @@
+import 'package:farcon/controls/direction.dart';
 import 'package:farcon/game.dart';
 import 'package:farcon/world/utils/map_utils.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 
+import 'character_state.dart';
+
 class Character extends PositionComponent
     with HasGameRef<Farcon>, MapUtils
     implements JoystickListener {
-  static const speed = 32.0;
+  static const speed = 64.0;
 
   final String characterPath;
   final double characterWidth;
@@ -16,7 +19,6 @@ class Character extends PositionComponent
 
   Vector2 characterPosition = Vector2(0, 0);
   double currentSpeed = 0;
-  double movementAngle = 0;
 
   CharacterState characterState = CharacterState.IDLE;
   Direction direction = Direction.RIGHT;
@@ -28,14 +30,6 @@ class Character extends PositionComponent
   });
 
   @override
-  void update(double dt) {
-    super.update(dt);
-    if (characterState == CharacterState.MOVE) {
-      _moveFromAngle(dt);
-    }
-  }
-
-  @override
   Future<void> onLoad() async {
     _spriteSheet = SpriteSheet(
       image: await gameRef.images.load(characterPath),
@@ -43,7 +37,6 @@ class Character extends PositionComponent
     );
 
     _spriteAnimationComponent = SpriteAnimationComponent(
-      position: position,
       animation: _getAnimation(_spriteSheet),
       size: Vector2(48.0, 64.0),
     );
@@ -52,19 +45,35 @@ class Character extends PositionComponent
   }
 
   @override
+  void update(double dt) {
+    super.update(dt);
+    if (characterState == CharacterState.MOVE) {
+      final updateSpeed = currentSpeed * dt;
+      if (direction == Direction.LEFT) {
+        characterPosition =
+            Vector2(characterPosition.x - updateSpeed, characterPosition.y);
+      } else if (direction == Direction.RIGHT) {
+        characterPosition =
+            Vector2(characterPosition.x + updateSpeed, characterPosition.y);
+      } else if (direction == Direction.UP) {
+        characterPosition =
+            Vector2(characterPosition.x, characterPosition.y - updateSpeed);
+      } else if (direction == Direction.DOWN) {
+        characterPosition =
+            Vector2(characterPosition.x, characterPosition.y + updateSpeed);
+      }
+
+      if (characterPosition != position) {
+        position = characterPosition;
+      }
+    }
+  }
+
+  @override
   void joystickAction(JoystickActionEvent event) {
     if (event.event == ActionEvent.down) {
       if (event.id == 1) {
         updateState(CharacterState.DANCE);
-      }
-      if (event.id == 2) {}
-    } else if (event.event == ActionEvent.move) {
-      if (event.id == 3) {
-        movementAngle = event.angle;
-      }
-    } else if (event.event == ActionEvent.move) {
-      if (event.id == 3) {
-        _determineAngle(event.angle);
       }
     }
   }
@@ -73,128 +82,113 @@ class Character extends PositionComponent
   void joystickChangeDirectional(JoystickDirectionalEvent event) {
     bool move = event.directional != JoystickMoveDirectional.idle;
     if (move) {
-      _determineAngle(event.angle);
-      updateState(CharacterState.MOVE);
+      final eAngle = event.angle;
       currentSpeed = speed * event.intensity;
+      final previousDirection = direction;
+      if (eAngle < 0 && eAngle > -1 || eAngle > 0 && eAngle < 1) {
+        direction = Direction.RIGHT;
+      } else if (eAngle < 3 && eAngle > 2 || eAngle > -3 && eAngle < -2) {
+        direction = Direction.LEFT;
+      } else if (eAngle < 2 && eAngle > 1) {
+        direction = Direction.DOWN;
+      } else if (eAngle > -2 && eAngle < -1) {
+        direction = Direction.UP;
+      }
+      updateState(CharacterState.MOVE,
+          directionChanged: previousDirection != direction);
     } else {
       updateState(CharacterState.IDLE);
-    }
-  }
-
-  void updateState(CharacterState state) {
-    if (state != characterState) {
-      characterState = state;
-      _spriteAnimationComponent.animation = _getAnimation(_spriteSheet);
     }
   }
 
   void keyMove(String key) {
     switch (key.toUpperCase()) {
       case 'A':
-        {
-          currentSpeed = speed;
-          direction = Direction.LEFT;
-          updateState(CharacterState.MOVE);
-          break;
-        }
+        _moveInDirection(Direction.LEFT);
+        break;
       case 'D':
-        {
-          currentSpeed = speed;
-          direction = Direction.RIGHT;
-          updateState(CharacterState.MOVE);
-          break;
-        }
+        _moveInDirection(Direction.RIGHT);
+        break;
       case 'W':
-        {
-          currentSpeed = speed;
-          updateState(CharacterState.MOVE);
-          direction = Direction.UP;
-          break;
-        }
+        _moveInDirection(Direction.UP);
+        break;
       case 'S':
-        {
-          currentSpeed = speed;
-          direction = Direction.DOWN;
-          updateState(CharacterState.MOVE);
-          break;
-        }
-      default: updateState(CharacterState.IDLE);
+        _moveInDirection(Direction.DOWN);
+        break;
+      default:
+        updateState(CharacterState.IDLE);
     }
   }
 
-  void _determineAngle(double angle) {
-    movementAngle = angle;
-    print(angle);
-    if (movementAngle < 0 && movementAngle > -1 ||
-        movementAngle > 0 && movementAngle < 1) {
-      direction = Direction.RIGHT;
-    } else if (movementAngle < 3 && movementAngle > 2 ||
-        movementAngle > -3 && movementAngle < -2) {
-      direction = Direction.LEFT;
-    } else if (movementAngle < 2 && movementAngle > 1) {
-      direction = Direction.DOWN;
-    } else if (movementAngle > -2 && movementAngle < -1) {
-      direction = Direction.UP;
-    }
+  void _moveInDirection(Direction newDirection) {
+    final previousDirection = direction;
+    currentSpeed = speed;
+    direction = newDirection;
+    updateState(CharacterState.MOVE,
+        directionChanged: previousDirection != direction);
   }
 
-  void _moveFromAngle(double dtUpdate) {
-    final updateSpeed = currentSpeed * dtUpdate;
-    if (direction == Direction.LEFT) {
-      characterPosition = Vector2(characterPosition.x - updateSpeed, characterPosition.y);
-    } else if (direction == Direction.RIGHT) {
-      characterPosition = Vector2(characterPosition.x + updateSpeed, characterPosition.y);
-    } else if (direction == Direction.UP) {
-      characterPosition = Vector2(characterPosition.x, characterPosition.y - updateSpeed);
-    } else if (direction == Direction.DOWN) {
-      characterPosition = Vector2(characterPosition.x, characterPosition.y + updateSpeed);
+  void updateState(CharacterState state, {bool directionChanged = false}) {
+    if (state != characterState || directionChanged) {
+      characterState = state;
+      _spriteAnimationComponent.animation = _getAnimation(_spriteSheet);
     }
 
-    position = characterPosition;
+    final cart = isoToCart(Vector2(characterPosition.x + (characterWidth/2), characterPosition.y + (characterHeight/3)));
+    print('cart: $cart');
+    int priority = getPriorityFromCoordinate(cart);
+    gameRef.changePriority(this, priority);
   }
 
   SpriteAnimation _getAnimation(SpriteSheet spriteSheet) {
     late SpriteAnimation characterAnimation;
-
     switch (characterState) {
       case CharacterState.DANCE:
-        characterAnimation = spriteSheet
-            .createAnimation(row: 0, stepTime: 0.1, from: 5, to: 7)
-            .reversed();
+        characterAnimation = _danceAnimation(spriteSheet);
         break;
-
       case CharacterState.MOVE:
-        if (direction == Direction.LEFT || direction == Direction.UP) {
-          characterAnimation = spriteSheet
-              .createAnimation(row: 5, stepTime: 0.1, from: 1, to: 8)
-              .reversed();
-        } else if (direction == Direction.RIGHT || direction == Direction.DOWN) {
-          characterAnimation = spriteSheet.createAnimation(
-              row: 4, stepTime: 0.1, from: 1, to: 8);
-        }
+        characterAnimation = _moveAnimation(spriteSheet);
         break;
-
       case CharacterState.IDLE:
       default:
-        characterAnimation = spriteSheet
-            .createAnimation(row: 0, stepTime: 0.2, from: 0, to: 1)
-            .reversed();
+        characterAnimation = _idleAnimation(spriteSheet);
         break;
+    }
+    return characterAnimation;
+  }
+
+  SpriteAnimation _danceAnimation(SpriteSheet spriteSheet) {
+    SpriteAnimation characterAnimation = spriteSheet
+        .createAnimation(row: 0, stepTime: 0.1, from: 5, to: 7)
+        .reversed();
+    return characterAnimation;
+  }
+
+  SpriteAnimation _idleAnimation(SpriteSheet spriteSheet) {
+    SpriteAnimation characterAnimation = spriteSheet
+        .createAnimation(row: 0, stepTime: 0.2, from: 0, to: 1)
+        .reversed();
+    return characterAnimation;
+  }
+
+  SpriteAnimation _moveAnimation(SpriteSheet spriteSheet) {
+    late SpriteAnimation characterAnimation;
+    if (direction == Direction.LEFT) {
+      characterAnimation = spriteSheet
+          .createAnimation(row: 5, stepTime: 0.1, from: 1, to: 8)
+          .reversed();
+    } else if (direction == Direction.RIGHT ||
+        direction == Direction.DOWN) {
+      characterAnimation = spriteSheet.createAnimation(
+          row: 4, stepTime: 0.1, from: 1, to: 8);
+    } else if (direction == Direction.UP) {
+      characterAnimation = spriteSheet
+          .createAnimation(row: 0, stepTime: 0.13, from: 5, to: 7)
+          .reversed();
+    } else {
+      characterAnimation = _idleAnimation(spriteSheet);
     }
 
     return characterAnimation;
   }
-}
-
-enum CharacterState {
-  IDLE,
-  MOVE,
-  DANCE,
-}
-
-enum Direction {
-  LEFT,
-  RIGHT,
-  UP,
-  DOWN,
 }

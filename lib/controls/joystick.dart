@@ -21,11 +21,6 @@ class Control extends JoystickComponent {
             bottom: 120,
           ),
         ),
-        JoystickAction(
-          actionId: 3,
-          margin: const EdgeInsets.only(bottom: 50, right: 120),
-          enableDirection: true,
-        ),
       ]
   );
 }

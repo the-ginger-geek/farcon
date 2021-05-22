@@ -9,9 +9,26 @@ mixin MapUtils {
   }
 
   Vector2 isoToCart(Vector2 p) {
-    final x = (p.x / MapConstants.destTileSize) + (p.y / MapConstants.tileHeight);
-    final y = (p.y / MapConstants.tileHeight) - (p.x / MapConstants.destTileSize);
+    final resolvedX = (p.x < 0) ? -p.x : p.x;
+    final resolvedY = (p.y < 0) ? -p.y : p.y;
+    final x = ((resolvedX / MapConstants.destTileSize) + (resolvedY / MapConstants.tileHeight))/2;
+    final y = ((resolvedY / MapConstants.tileHeight) - (resolvedX / MapConstants.destTileSize))/2;
     return Vector2(x, y);
+  }
+
+  int getPriorityFromCoordinate(Vector2 coordinate) {
+    int priority = (0.5 *
+                (coordinate.x + coordinate.y) *
+                (coordinate.x + coordinate.y + 1) +
+            (coordinate.x * coordinate.y))
+        .toInt();
+
+    int result = 0;
+    if (priority < 0) result = -priority;
+    else result = priority;
+
+    print('priority $result');
+    return result;
   }
 
   Vector2 alignCoordinateToImage(

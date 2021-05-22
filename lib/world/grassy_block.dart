@@ -17,6 +17,9 @@ class GrassyBlock extends PositionComponent with HasGameRef<Farcon>, MapUtils {
   final int blockSize;
   final Vector2 leftTop;
 
+  @override
+  int priority = 0;
+
   List<Vector2> waterCoordinates = [];
 
   GrassyBlock({
@@ -45,7 +48,6 @@ class GrassyBlock extends PositionComponent with HasGameRef<Farcon>, MapUtils {
       sprites: AssetPaths.flowerSprites,
       clusterCountMax: 5,
       clusterCountMin: 2,
-      priority: 1,
       imageSize: MapConstants.flowerImageSize,
       blockSize: blockSize,
       noDrawCoordinates: waterCoordinates,
@@ -56,8 +58,7 @@ class GrassyBlock extends PositionComponent with HasGameRef<Farcon>, MapUtils {
       radiusSizeMax: 2,
       sprites: AssetPaths.mushroomSprites,
       clusterCountMax: 3,
-      clusterCountMin: 0,
-      priority: 1,
+      clusterCountMin: 1,
       imageSize: MapConstants.mushroomImageSize,
       blockSize: blockSize,
       noDrawCoordinates: waterCoordinates,
@@ -69,7 +70,6 @@ class GrassyBlock extends PositionComponent with HasGameRef<Farcon>, MapUtils {
       sprites: AssetPaths.treeSprites,
       clusterCountMax: 2,
       clusterCountMin: 1,
-      priority: 2,
       imageSize: MapConstants.treeImageSize,
       blockSize: blockSize,
       noDrawCoordinates: waterCoordinates,
@@ -80,7 +80,6 @@ class GrassyBlock extends PositionComponent with HasGameRef<Farcon>, MapUtils {
       seedCountMax: MapConstants.treeCountMax,
       seedCountMin: MapConstants.treeCountMin,
       imageSize: MapConstants.treeImageSize,
-      priority: 3,
       blockSize: blockSize,
       noDrawCoordinates: waterCoordinates,
     ));
@@ -99,10 +98,11 @@ class GrassyBlock extends PositionComponent with HasGameRef<Farcon>, MapUtils {
       srcSize: Vector2.all(MapConstants.srcTileSize),
     );
 
+    final mapPosition = cartToIso(leftTop);
     gameRef.add(_map = IsometricTileMapComponent(
       tileset,
       buildMap(),
-      position: cartToIso(leftTop),
+      position: Vector2(mapPosition.x, mapPosition.y + MapConstants.destTileSize/2),
       destTileSize: Vector2.all(MapConstants.destTileSize),
     ));
   }

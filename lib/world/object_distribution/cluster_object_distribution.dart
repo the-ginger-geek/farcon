@@ -18,7 +18,6 @@ class ClusterObjectDistribution extends ObjectDistribution {
     required int clusterCountMin,
     required int imageSize,
     required int blockSize,
-    int priority = 0,
     CenterTo centerImageTo = CenterTo.CENTER_BOTTOM,
     List<Vector2> noDrawCoordinates = const [],
     Function(List<Vector2> distributionCoordinates)? callback,
@@ -28,8 +27,7 @@ class ClusterObjectDistribution extends ObjectDistribution {
           seedCountMin: clusterCountMin,
           seedCountMax: clusterCountMax,
           imageSize: imageSize,
-          blockSIze: blockSize,
-          priority: priority,
+          blockSize: blockSize,
           callback: callback,
           centerImageTo: centerImageTo,
           noDrawCoordinates: noDrawCoordinates,
@@ -39,8 +37,8 @@ class ClusterObjectDistribution extends ObjectDistribution {
   List<Vector2> getLocations() {
     List<Vector2> coordinates = [];
     final centerCoordinates = _generateClusterCenterPoints();
-    for (int x = leftTop.x.toInt(); x < leftTop.x + blockSIze; x++) {
-      for (int y = leftTop.y.toInt(); y < leftTop.y + blockSIze; y++) {
+    for (int x = leftTop.x.toInt(); x < leftTop.x + blockSize; x++) {
+      for (int y = leftTop.y.toInt(); y < leftTop.y + blockSize; y++) {
         if (_addCoordinate(centerCoordinates, x, y, coordinates)) continue;
       }
     }
@@ -78,9 +76,9 @@ class ClusterObjectDistribution extends ObjectDistribution {
       if (radius < radiusSizeMin) radius = radiusSizeMin;
 
       if (center.x - radius > leftTop.x &&
-          center.x + radius < leftTop.x + blockSIze &&
+          center.x + radius < leftTop.x + blockSize &&
           center.y - radius > leftTop.y &&
-          center.y + radius < leftTop.y + blockSIze) {
+          center.y + radius < leftTop.y + blockSize) {
         _centerCoordinates.add(Circle(center, radius));
       } else {
         count++;
@@ -92,9 +90,11 @@ class ClusterObjectDistribution extends ObjectDistribution {
 
   Vector2 _getRandomCoordinate() {
     final Vector2 center = Vector2(
-      (Random().nextInt(leftTop.x.toInt() + blockSIze)).toDouble(),
-      (Random().nextInt(leftTop.y.toInt() + blockSIze)).toDouble(),
+      (Random().nextInt(leftTop.x.toInt() + blockSize)).toDouble(),
+      (Random().nextInt(leftTop.y.toInt() + blockSize)).toDouble(),
     );
+
+
     return center;
   }
 }

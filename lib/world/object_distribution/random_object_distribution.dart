@@ -22,8 +22,7 @@ class RandomObjectDistribution extends ObjectDistribution {
           seedCountMin: seedCountMin,
           seedCountMax: seedCountMax,
           imageSize: imageSize,
-          blockSIze: blockSize,
-          priority: priority,
+          blockSize: blockSize,
           callback: callback,
           centerImageTo: centerImageTo,
           noDrawCoordinates: noDrawCoordinates,
@@ -39,9 +38,9 @@ class RandomObjectDistribution extends ObjectDistribution {
       Vector2 coordinate = _getRandomCoordinate();
       if (!noDrawCoordinates.contains(coordinate) &&
           coordinate.x > leftTop.x &&
-          coordinate.x < leftTop.x + blockSIze &&
+          coordinate.x < leftTop.x + blockSize &&
           coordinate.y > leftTop.y &&
-          coordinate.y < leftTop.y + blockSIze) {
+          coordinate.y < leftTop.y + blockSize) {
         coordinates.add(coordinate);
       } else {
         seedCount++;
@@ -55,8 +54,8 @@ class RandomObjectDistribution extends ObjectDistribution {
 
   Vector2 _getRandomCoordinate() {
     final coordinate = Vector2(
-      Random().nextInt(leftTop.x.toInt() + blockSIze).toDouble(),
-      Random().nextInt(leftTop.y.toInt() + blockSIze).toDouble(),
+      Random().nextInt(leftTop.x.toInt() + blockSize).toDouble(),
+      Random().nextInt(leftTop.y.toInt() + blockSize).toDouble(),
     );
     return coordinate;
   }
