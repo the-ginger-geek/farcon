@@ -1,13 +1,15 @@
 import 'dart:math';
 
-import 'package:farcon/world/object_distribution/object_distribution.dart';
-import 'package:farcon/world/utils/map_utils.dart';
+import 'package:farcon/game/world/object_distribution/object_distribution.dart';
+import 'package:farcon/game/world/utils/map_utils.dart';
+import 'package:farcon/models/resource_item.dart';
 import 'package:flame/components.dart';
 
 class RandomObjectDistribution extends ObjectDistribution {
   RandomObjectDistribution({
     required List<String> sprites,
     required Vector2 leftTop,
+    required int resourceType,
     required int seedCountMax,
     required int seedCountMin,
     required int imageSize,
@@ -15,8 +17,9 @@ class RandomObjectDistribution extends ObjectDistribution {
     int priority = 0,
     CenterTo centerImageTo = CenterTo.CENTER_BOTTOM,
     List<Vector2> noDrawCoordinates = const [],
-    Function(List<Vector2> distributionCoordinates)? callback,
+    Function(List<ResourceItem> distributionCoordinates)? callback,
   }) : super(
+          resourceType: resourceType,
           sprites: sprites,
           leftTop: leftTop,
           seedCountMin: seedCountMin,

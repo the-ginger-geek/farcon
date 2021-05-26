@@ -1,0 +1,6 @@
+find . -name "*.g.dart" -type f -delete
+find . -name "*.gr.dart" -type f -delete
+find . -name "service_locator.config.dart" -type f -delete
+flutter clean
+flutter pub get
+flutter pub run build_runner build --delete-conflicting-outputs

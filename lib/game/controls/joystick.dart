@@ -1,4 +1,4 @@
-import 'package:farcon/game.dart';
+import 'package:farcon/game/game.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 

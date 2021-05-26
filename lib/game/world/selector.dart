@@ -1,8 +1,9 @@
 import 'dart:ui';
 
-import 'package:farcon/constants/map_constants.dart';
 import 'package:flame/components.dart';
 import 'package:flame/palette.dart';
+
+import '../../constants/map_constants.dart';
 
 class Selector extends SpriteComponent {
   bool show = false;

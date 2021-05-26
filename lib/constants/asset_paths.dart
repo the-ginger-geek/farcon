@@ -22,7 +22,6 @@ class AssetPaths {
     'trees/tree_pineSmallC_NE.png',
     'trees/tree_pineSmallD_NE.png',
     'trees/tree_pineTallA_detailed_NE.png',
-    'trees/tree_pineTallB_detailed_NE.png',
     'trees/tree_plateau_dark_NE.png',
     'trees/tree_simple_dark_NE.png',
     'trees/tree_small_dark_NE.png',

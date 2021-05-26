@@ -1,6 +1,6 @@
-import 'package:farcon/controls/direction.dart';
-import 'package:farcon/game.dart';
-import 'package:farcon/world/utils/map_utils.dart';
+import 'package:farcon/game/controls/direction.dart';
+import 'package:farcon/game/game.dart';
+import 'package:farcon/game/world/utils/map_utils.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
 

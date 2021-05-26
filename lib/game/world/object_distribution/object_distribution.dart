@@ -1,7 +1,8 @@
 import 'dart:math';
 
 import 'package:farcon/constants/map_constants.dart';
-import 'package:farcon/world/utils/map_utils.dart';
+import 'package:farcon/game/world/utils/map_utils.dart';
+import 'package:farcon/models/resource_item.dart';
 import 'package:flame/components.dart';
 
 import '../../game.dart';
@@ -10,16 +11,18 @@ abstract class ObjectDistribution extends PositionComponent
     with HasGameRef<Farcon>, MapUtils {
   final Vector2 leftTop;
   final List<String> sprites;
+  final int resourceType;
   final int seedCountMax;
   final int seedCountMin;
   final int imageSize;
   final int blockSize;
   final CenterTo centerImageTo;
   final List<Vector2> noDrawCoordinates;
-  final List<Vector2> distributionCoordinates = [];
-  final Function(List<Vector2> distributionCoordinates)? callback;
+  final List<ResourceItem> distributionCoordinates = [];
+  final Function(List<ResourceItem> distributionCoordinates)? callback;
 
   ObjectDistribution({
+    required this.resourceType,
     required this.sprites,
     required this.leftTop,
     required this.seedCountMax,
@@ -41,9 +44,14 @@ abstract class ObjectDistribution extends PositionComponent
     int count = sprites.length;
     final coordinates = getLocations();
     for (var coordinate in coordinates) {
-      distributionCoordinates.add(coordinate);
+      final drawableIndex = Random().nextInt(count);
+      final spriteString = sprites[drawableIndex];
+      distributionCoordinates.add(ResourceItem(
+        resourceType: resourceType,
+        drawableIndex: drawableIndex,
+        coordinate: coordinate,
+      ));
 
-      final spriteString = sprites[Random().nextInt(count)];
       final image = await gameRef.images.load(spriteString);
       final isoPosition = cartToIso(coordinate);
       await gameRef.add(PositionedSprite(

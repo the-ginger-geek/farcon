@@ -1,10 +1,5 @@
-import 'package:farcon/characters/character.dart';
-import 'package:farcon/constants/character_constants.dart';
-import 'package:farcon/constants/map_constants.dart';
-import 'package:farcon/controls/joystick.dart';
-import 'package:farcon/world/grassy_block.dart';
-import 'package:farcon/world/utils/map_utils.dart';
 import 'package:flame/components.dart';
+import 'package:flame/gestures.dart';
 import 'package:flame/joystick.dart';
 import 'package:flame/keyboard.dart';
 import 'package:flutter/material.dart' hide Image;
@@ -12,12 +7,18 @@ import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flame/image_composition.dart';
 
-import 'constants/asset_paths.dart';
+import '../game/characters/character.dart';
+import '../constants/character_constants.dart';
+import '../constants/map_constants.dart';
+import '../constants/asset_paths.dart';
+import '../game/controls/joystick.dart';
+import '../game/world/foresty_block.dart';
+import '../game/world/utils/map_utils.dart';
 
 class Farcon extends BaseGame
     with HasDraggableComponents, KeyboardEvents, MapUtils {
   Vector2 dragDown = Vector2(0, 0);
-  late GrassyBlock grassyBlock;
+  late ForestyBlock grassyBlock;
   late Character character;
   late JoystickComponent joystick;
 
@@ -40,6 +41,11 @@ class Farcon extends BaseGame
     camera.followComponent(character);
   }
 
+  void onDragUpdate(int pointerId, DragUpdateInfo details) {
+    super.onDragUpdate(pointerId, details);
+    joystick.onDragUpdate(pointerId, details);
+  }
+
 
   // @override
   // void onDragUpdate(int pointerId, DragUpdateInfo details) {
@@ -60,12 +66,12 @@ class Farcon extends BaseGame
 
   void _loadMap() {
     final blockSize = MapConstants.mapRenderBlockSize;
-    final mapEdgeX = blockSize * 1;
-    final mapEdgeY = blockSize * 1;
+    final mapEdgeX = blockSize * 5.0;
+    final mapEdgeY = blockSize * 5.0;
 
     for (double x = 0; x < mapEdgeX; x += blockSize) {
       for (double y = 0; y < mapEdgeY; y += blockSize) {
-        add(grassyBlock = GrassyBlock(
+        add(grassyBlock = ForestyBlock(
           leftTop: Vector2(x, y),
           blockSize: blockSize,
         ));

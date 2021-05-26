@@ -1,8 +1,9 @@
 import 'dart:math';
 
-import 'package:farcon/world/models/circle.dart';
-import 'package:farcon/world/object_distribution/object_distribution.dart';
-import 'package:farcon/world/utils/map_utils.dart';
+import 'package:farcon/game/world/object_distribution/object_distribution.dart';
+import 'package:farcon/game/world/utils/map_utils.dart';
+import 'package:farcon/models/circle.dart';
+import 'package:farcon/models/resource_item.dart';
 import 'package:flame/components.dart';
 
 class ClusterObjectDistribution extends ObjectDistribution {
@@ -12,6 +13,7 @@ class ClusterObjectDistribution extends ObjectDistribution {
   ClusterObjectDistribution({
     required this.radiusSizeMin,
     required this.radiusSizeMax,
+    required int resourceType,
     required Vector2 leftTop,
     required List<String> sprites,
     required int clusterCountMax,
@@ -20,8 +22,9 @@ class ClusterObjectDistribution extends ObjectDistribution {
     required int blockSize,
     CenterTo centerImageTo = CenterTo.CENTER_BOTTOM,
     List<Vector2> noDrawCoordinates = const [],
-    Function(List<Vector2> distributionCoordinates)? callback,
+    Function(List<ResourceItem> distributionCoordinates)? callback,
   }) : super(
+          resourceType: resourceType,
           sprites: sprites,
           leftTop: leftTop,
           seedCountMin: clusterCountMin,
