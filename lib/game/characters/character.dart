@@ -17,17 +17,18 @@ class Character extends PositionComponent
   late SpriteSheet _spriteSheet;
   late SpriteAnimationComponent _spriteAnimationComponent;
 
-  Vector2 characterPosition = Vector2(0, 0);
+  late Vector2 characterPosition;
   double currentSpeed = 0;
 
-  CharacterState characterState = CharacterState.IDLE;
-  Direction direction = Direction.RIGHT;
+  CharacterState characterState = CharacterState.uninitialized;
+  Direction direction = Direction.NONE;
 
   Character({
     required this.characterPath,
     required this.characterWidth,
     required this.characterHeight,
-  });
+    required this.characterPosition,
+  }) : super(priority: 100);
 
   @override
   Future<void> onLoad() async {
@@ -47,18 +48,21 @@ class Character extends PositionComponent
   @override
   void update(double dt) {
     super.update(dt);
-    if (characterState == CharacterState.MOVE) {
+    if (characterState == CharacterState.uninitialized) {
+      position = characterPosition;
+      characterState = CharacterState.idle;
+    } else if (characterState == CharacterState.move) {
       final updateSpeed = currentSpeed * dt;
-      if (direction == Direction.LEFT) {
+      if (direction == Direction.left) {
         characterPosition =
             Vector2(characterPosition.x - updateSpeed, characterPosition.y);
-      } else if (direction == Direction.RIGHT) {
+      } else if (direction == Direction.right) {
         characterPosition =
             Vector2(characterPosition.x + updateSpeed, characterPosition.y);
-      } else if (direction == Direction.UP) {
+      } else if (direction == Direction.up) {
         characterPosition =
             Vector2(characterPosition.x, characterPosition.y - updateSpeed);
-      } else if (direction == Direction.DOWN) {
+      } else if (direction == Direction.down) {
         characterPosition =
             Vector2(characterPosition.x, characterPosition.y + updateSpeed);
       }
@@ -73,7 +77,7 @@ class Character extends PositionComponent
   void joystickAction(JoystickActionEvent event) {
     if (event.event == ActionEvent.down) {
       if (event.id == 1) {
-        updateState(CharacterState.DANCE);
+        updateState(CharacterState.dance);
       }
     }
   }
@@ -86,37 +90,37 @@ class Character extends PositionComponent
       currentSpeed = speed * event.intensity;
       final previousDirection = direction;
       if (eAngle < 0 && eAngle > -1 || eAngle > 0 && eAngle < 1) {
-        direction = Direction.RIGHT;
+        direction = Direction.right;
       } else if (eAngle < 3 && eAngle > 2 || eAngle > -3 && eAngle < -2) {
-        direction = Direction.LEFT;
+        direction = Direction.left;
       } else if (eAngle < 2 && eAngle > 1) {
-        direction = Direction.DOWN;
+        direction = Direction.down;
       } else if (eAngle > -2 && eAngle < -1) {
-        direction = Direction.UP;
+        direction = Direction.up;
       }
-      updateState(CharacterState.MOVE,
+      updateState(CharacterState.move,
           directionChanged: previousDirection != direction);
     } else {
-      updateState(CharacterState.IDLE);
+      updateState(CharacterState.idle);
     }
   }
 
   void keyMove(String key) {
     switch (key.toUpperCase()) {
       case 'A':
-        _moveInDirection(Direction.LEFT);
+        _moveInDirection(Direction.left);
         break;
       case 'D':
-        _moveInDirection(Direction.RIGHT);
+        _moveInDirection(Direction.right);
         break;
       case 'W':
-        _moveInDirection(Direction.UP);
+        _moveInDirection(Direction.up);
         break;
       case 'S':
-        _moveInDirection(Direction.DOWN);
+        _moveInDirection(Direction.down);
         break;
       default:
-        updateState(CharacterState.IDLE);
+        updateState(CharacterState.idle);
     }
   }
 
@@ -124,7 +128,7 @@ class Character extends PositionComponent
     final previousDirection = direction;
     currentSpeed = speed;
     direction = newDirection;
-    updateState(CharacterState.MOVE,
+    updateState(CharacterState.move,
         directionChanged: previousDirection != direction);
   }
 
@@ -134,7 +138,8 @@ class Character extends PositionComponent
       _spriteAnimationComponent.animation = _getAnimation(_spriteSheet);
     }
 
-    final cart = isoToCart(Vector2(characterPosition.x + (characterWidth/2), characterPosition.y + (characterHeight/3)));
+    final cart = isoToCart(Vector2(characterPosition.x + (characterWidth / 2),
+        characterPosition.y + (characterHeight / 3)));
     int priority = getPriorityFromCoordinate(cart);
     gameRef.changePriority(this, priority);
   }
@@ -142,13 +147,13 @@ class Character extends PositionComponent
   SpriteAnimation _getAnimation(SpriteSheet spriteSheet) {
     late SpriteAnimation characterAnimation;
     switch (characterState) {
-      case CharacterState.DANCE:
+      case CharacterState.dance:
         characterAnimation = _danceAnimation(spriteSheet);
         break;
-      case CharacterState.MOVE:
+      case CharacterState.move:
         characterAnimation = _moveAnimation(spriteSheet);
         break;
-      case CharacterState.IDLE:
+      case CharacterState.idle:
       default:
         characterAnimation = _idleAnimation(spriteSheet);
         break;
@@ -172,15 +177,14 @@ class Character extends PositionComponent
 
   SpriteAnimation _moveAnimation(SpriteSheet spriteSheet) {
     late SpriteAnimation characterAnimation;
-    if (direction == Direction.LEFT) {
+    if (direction == Direction.left) {
       characterAnimation = spriteSheet
           .createAnimation(row: 5, stepTime: 0.1, from: 1, to: 8)
           .reversed();
-    } else if (direction == Direction.RIGHT ||
-        direction == Direction.DOWN) {
-      characterAnimation = spriteSheet.createAnimation(
-          row: 4, stepTime: 0.1, from: 1, to: 8);
-    } else if (direction == Direction.UP) {
+    } else if (direction == Direction.right || direction == Direction.down) {
+      characterAnimation =
+          spriteSheet.createAnimation(row: 4, stepTime: 0.1, from: 1, to: 8);
+    } else if (direction == Direction.up) {
       characterAnimation = spriteSheet
           .createAnimation(row: 0, stepTime: 0.13, from: 5, to: 7)
           .reversed();

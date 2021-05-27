@@ -1,5 +1,6 @@
 enum CharacterState {
-  IDLE,
-  MOVE,
-  DANCE,
+  idle,
+  move,
+  dance,
+  uninitialized,
 }

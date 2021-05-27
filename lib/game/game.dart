@@ -26,14 +26,17 @@ class Farcon extends BaseGame
   Future<void> onLoad() async {
     super.onLoad();
     // debugMode = true;
-    _loadMap();
-    
+    final centerCoordinates = _loadMap();
+    final characterPosition = cartToIso(centerCoordinates);
     character = Character(
       characterPath: AssetPaths.robot,
       characterHeight: CharacterConstants.characterSheetHeight / CharacterConstants.characterSheetRowCount,
       characterWidth: CharacterConstants.characterSheetWidth / CharacterConstants.characterSheetColumnCount,
+      characterPosition: characterPosition,
     );
 
+    joystick = Control(this)..addObserver(character);
+    add(joystick);
     add(character);
 
     camera.followComponent(character);
@@ -62,10 +65,10 @@ class Farcon extends BaseGame
   //   );
   // }
 
-  void _loadMap() {
+  Vector2 _loadMap() {
     final blockSize = MapConstants.mapRenderBlockSize;
-    final mapEdgeX = blockSize * 5.0;
-    final mapEdgeY = blockSize * 5.0;
+    final mapEdgeX = blockSize * 4.0;
+    final mapEdgeY = blockSize * 4.0;
 
     for (double x = 0; x < mapEdgeX; x += blockSize) {
       for (double y = 0; y < mapEdgeY; y += blockSize) {
@@ -75,17 +78,16 @@ class Farcon extends BaseGame
         ));
       }
     }
+
+    return Vector2(mapEdgeX/2, mapEdgeY/2);
   }
 
   @override
   void onKeyEvent(RawKeyEvent event) {
     if (event.isKeyPressed(event.logicalKey)) {
-      camera.followComponent(character);
       character.keyMove(event.logicalKey.keyLabel);
     } else {
-      camera.resetMovement();
       character.keyMove('');
     }
-
   }
 }
