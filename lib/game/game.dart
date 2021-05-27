@@ -34,9 +34,7 @@ class Farcon extends BaseGame
       characterWidth: CharacterConstants.characterSheetWidth / CharacterConstants.characterSheetColumnCount,
     );
 
-    joystick = Control(this)..addObserver(character);
     add(character);
-    add(joystick);
 
     camera.followComponent(character);
   }

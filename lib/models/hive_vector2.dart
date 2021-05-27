@@ -19,4 +19,9 @@ class HiveVector2 {
   }
 
   Vector2 toVector2() => Vector2(x, y);
+
+  @override
+  String toString() {
+    return 'HiveVector2[$x, $y]';
+  }
 }

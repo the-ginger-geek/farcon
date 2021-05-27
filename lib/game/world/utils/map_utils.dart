@@ -11,8 +11,10 @@ mixin MapUtils {
   Vector2 isoToCart(Vector2 p) {
     final resolvedX = (p.x < 0) ? -p.x : p.x;
     final resolvedY = (p.y < 0) ? -p.y : p.y;
-    final x = ((resolvedX / MapConstants.destTileSize) + (resolvedY / MapConstants.tileHeight))/2;
-    final y = ((resolvedY / MapConstants.tileHeight) - (resolvedX / MapConstants.destTileSize))/2;
+    final x = ((resolvedX / MapConstants.destTileSize) +
+            (resolvedY / MapConstants.tileHeight)) / 2;
+    final y = ((resolvedY / MapConstants.tileHeight) -
+            (resolvedX / MapConstants.destTileSize)) / 2;
     return Vector2(x, y);
   }
 
@@ -24,10 +26,11 @@ mixin MapUtils {
         .toInt();
 
     int result = 0;
-    if (priority < 0) result = -priority;
-    else result = priority;
-
-    print('priority $result');
+    if (priority < 0) {
+      result = -priority;
+    } else {
+      result = priority;
+    }
     return result;
   }
 

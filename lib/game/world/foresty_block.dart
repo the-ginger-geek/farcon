@@ -22,9 +22,7 @@ class ForestyBlock extends PositionComponent with HasGameRef<Farcon>, MapUtils {
   late IsometricTileMapComponent _map;
   final int blockSize;
   final Vector2 leftTop;
-
-  @override
-  int priority = 0;
+  late DataStore dataStore;
 
   List<Vector2> waterCoordinates = [];
 
@@ -35,6 +33,7 @@ class ForestyBlock extends PositionComponent with HasGameRef<Farcon>, MapUtils {
 
   @override
   Future<void> onLoad() async {
+    dataStore = await locator.getAsync<DataStore>();
     await _loadMap();
 
     _drawMapComponents();
@@ -218,7 +217,7 @@ class ForestyBlock extends PositionComponent with HasGameRef<Farcon>, MapUtils {
       }
     }
 
-    locator<DataStore>().save(
+    dataStore.save(
       storeKey: '${StoreKeys.mapBlock}.$leftTop',
       data: MapBlock(
           positionId: leftTop, matrix: _map.matrix, resources: resourceItems),

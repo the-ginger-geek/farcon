@@ -135,7 +135,6 @@ class Character extends PositionComponent
     }
 
     final cart = isoToCart(Vector2(characterPosition.x + (characterWidth/2), characterPosition.y + (characterHeight/3)));
-    print('cart: $cart');
     int priority = getPriorityFromCoordinate(cart);
     gameRef.changePriority(this, priority);
   }
