@@ -1,5 +1,4 @@
 
-import 'dart:typed_data';
 
 import 'package:farcon/constants/hive_types.dart';
 import 'package:flame/components.dart';

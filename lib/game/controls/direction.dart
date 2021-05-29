@@ -7,5 +7,5 @@ enum Direction {
   rightTop,
   up,
   down,
-  NONE
+  none
 }

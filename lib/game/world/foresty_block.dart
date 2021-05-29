@@ -14,11 +14,12 @@ import '../../game/game.dart';
 import '../../game/world/utils/map_utils.dart';
 import '../../models/resource_item.dart';
 import '../../models/circle.dart';
-import '../../models/map_block.dart';
 import 'object_distribution/cluster_object_distribution.dart';
 import 'object_distribution/random_object_distribution.dart';
 
-class ForestyBlock extends PositionComponent with HasGameRef<Farcon>, MapUtils {
+class ForestyBlock extends PositionComponent with MapUtils {
+  final Farcon gameRef;
+
   late IsometricTileMapComponent _map;
   final int blockSize;
   final Vector2 leftTop;
@@ -29,7 +30,9 @@ class ForestyBlock extends PositionComponent with HasGameRef<Farcon>, MapUtils {
   ForestyBlock({
     required this.blockSize,
     required this.leftTop,
-  });
+    required this.gameRef,
+    int priority = 0,
+  }) : super(priority: priority);
 
   @override
   Future<void> onLoad() async {
@@ -53,7 +56,7 @@ class ForestyBlock extends PositionComponent with HasGameRef<Farcon>, MapUtils {
     );
 
     final mapPosition = cartToIso(leftTop);
-    gameRef.add(_map = IsometricTileMapComponent(
+    addChild(_map = IsometricTileMapComponent(
       tileset,
       buildMap(),
       position:
@@ -89,17 +92,22 @@ class ForestyBlock extends PositionComponent with HasGameRef<Farcon>, MapUtils {
     if (damCount < MapConstants.damCountMax)
       damCount = MapConstants.damCountMin;
 
-    for (int i = 0; i < damCount; i++) {
-      final Vector2 damCenter = Vector2(
-        (Random().nextInt(leftTop.x.toInt() + blockSize)).toDouble(),
-        (Random().nextInt(leftTop.y.toInt() + blockSize)).toDouble(),
-      );
+    try {
+      for (int i = 0; i < damCount; i++) {
+        final Vector2 damCenter = Vector2(
+          (Random().nextInt(blockSize)).toDouble(),
+          (Random().nextInt(leftTop.y.toInt() + blockSize)).toDouble(),
+        );
+        final Vector2 movedCoordinate = Vector2(damCenter.x + leftTop.x, damCenter.y + leftTop.y);
 
-      int radius = Random().nextInt(MapConstants.largestDamSize);
-      if (radius < MapConstants.smallestDamSize) {
-        radius = MapConstants.smallestDamSize;
+        int radius = Random().nextInt(MapConstants.largestDamSize);
+        if (radius < MapConstants.smallestDamSize) {
+          radius = MapConstants.smallestDamSize;
+        }
+        dams.add(Circle(movedCoordinate, radius));
       }
-      dams.add(Circle(damCenter, radius));
+    } catch (e) {
+      print(e);
     }
     return dams;
   }
@@ -217,10 +225,10 @@ class ForestyBlock extends PositionComponent with HasGameRef<Farcon>, MapUtils {
       }
     }
 
-    dataStore.save(
-      storeKey: '${StoreKeys.mapBlock}.$leftTop',
-      data: MapBlock(
-          positionId: leftTop, matrix: _map.matrix, resources: resourceItems),
-    );
+    // dataStore.save(
+    //   storeKey: '${StoreKeys.mapBlock}.$leftTop',
+    //   data: MapBlock(
+    //       positionId: leftTop, matrix: _map.matrix, resources: resourceItems),
+    // );
   }
 }

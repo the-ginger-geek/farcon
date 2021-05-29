@@ -19,19 +19,11 @@ mixin MapUtils {
   }
 
   int getPriorityFromCoordinate(Vector2 coordinate) {
-    int priority = (0.5 *
-                (coordinate.x + coordinate.y) *
-                (coordinate.x + coordinate.y + 1) +
-            (coordinate.x * coordinate.y))
-        .toInt();
+    double x = coordinate.x;
+    double y = coordinate.y;
+    int priority = (0.5 * (x + y) * (x + y + 1) + (x * y)).toInt();
 
-    int result = 0;
-    if (priority < 0) {
-      result = -priority;
-    } else {
-      result = priority;
-    }
-    return result;
+    return priority;
   }
 
   Vector2 alignCoordinateToImage(

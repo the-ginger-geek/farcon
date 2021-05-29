@@ -1,4 +1,3 @@
-
 import 'package:farcon/constants/store_keys.dart';
 import 'package:hive/hive.dart';
 import 'package:injectable/injectable.dart';
@@ -34,11 +33,13 @@ class DataStore {
     await _addToCache(data, storeBox);
   }
 
-  Future<T> get<T>({
+  Future<T?> get<T>({
     required String storeKey,
   }) async {
+    print('loadData $storeKey');
     Box cacheBox = await _openCache(storeKey);
-    return cacheBox.get(_fieldKey);
+    if (cacheBox.containsKey(_fieldKey)) return cacheBox.get(_fieldKey);
+    return null;
   }
 
   Future<Box> _openCache(String storeKey) async {

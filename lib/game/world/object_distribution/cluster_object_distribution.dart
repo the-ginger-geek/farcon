@@ -92,12 +92,10 @@ class ClusterObjectDistribution extends ObjectDistribution {
   }
 
   Vector2 _getRandomCoordinate() {
-    final Vector2 center = Vector2(
-      (Random().nextInt(leftTop.x.toInt() + blockSize)).toDouble(),
-      (Random().nextInt(leftTop.y.toInt() + blockSize)).toDouble(),
+    final coordinate = Vector2(
+      Random().nextInt(blockSize).toDouble(),
+      Random().nextInt(blockSize).toDouble(),
     );
-
-
-    return center;
+    return Vector2(coordinate.x + leftTop.x, coordinate.y + leftTop.y);
   }
 }

@@ -57,9 +57,9 @@ class RandomObjectDistribution extends ObjectDistribution {
 
   Vector2 _getRandomCoordinate() {
     final coordinate = Vector2(
-      Random().nextInt(leftTop.x.toInt() + blockSize).toDouble(),
-      Random().nextInt(leftTop.y.toInt() + blockSize).toDouble(),
+      Random().nextInt(blockSize).toDouble(),
+      Random().nextInt(blockSize).toDouble(),
     );
-    return coordinate;
+    return Vector2(coordinate.x + leftTop.x, coordinate.y + leftTop.y);
   }
 }

@@ -1,5 +1,4 @@
 
-import 'package:hive/hive.dart';
 
 class StoreAdapters {
   static void registerAdapters() {

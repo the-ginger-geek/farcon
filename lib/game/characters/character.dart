@@ -9,7 +9,9 @@ import 'character_state.dart';
 class Character extends PositionComponent
     with HasGameRef<Farcon>, MapUtils
     implements JoystickListener {
-  static const speed = 64.0;
+  static const speed = 264.0;
+  static const characterSpriteWidth = 48.0;
+  static const characterSpriteHeight = 64.0;
 
   final String characterPath;
   final double characterWidth;
@@ -21,7 +23,7 @@ class Character extends PositionComponent
   double currentSpeed = 0;
 
   CharacterState characterState = CharacterState.uninitialized;
-  Direction direction = Direction.NONE;
+  Direction direction = Direction.none;
 
   Character({
     required this.characterPath,
@@ -39,7 +41,7 @@ class Character extends PositionComponent
 
     _spriteAnimationComponent = SpriteAnimationComponent(
       animation: _getAnimation(_spriteSheet),
-      size: Vector2(48.0, 64.0),
+      size: Vector2(characterSpriteWidth, characterSpriteHeight),
     );
 
     addChild(_spriteAnimationComponent);
